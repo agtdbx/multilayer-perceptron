@@ -6,11 +6,9 @@
 #    By: aderouba <aderouba@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/20 15:14:17 by aderouba          #+#    #+#              #
-#    Updated: 2025/02/20 16:05:31 by aderouba         ###   ########.fr        #
+#    Updated: 2025/02/20 16:15:13 by aderouba         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
-
-from network.sigmoid import sigmoid
 
 def dot(vec1: list[float], vec2: list[float], size: int) -> float:
     """
@@ -68,16 +66,18 @@ class Layer:
         return (self.weights, self.biases)
 
 
-    def forward(self, inputs: list[float]) -> list[float]:
+    def forward(self, inputs: list[float], activationFunction) -> list[float]:
         """
         A method to compute the inputs throw the layer.
-        @param  inputs  The inputs to process.
-        @return The result of the compute.
+        @param  inputs              The inputs to process.
+        @param  activationFunction  The activation function, such as sigmoid or ReLU.
+        @return The result of computation.
         """
         results = [0.0] * self.inputSize
 
         # For each neurons, apply weigths, bias and compute sigmoid
         for i in range(self.nbNeurons):
-            results[i] = sigmoid(dot(self.weights[i], inputs, self.inputSize) + self.biases[i])
+            results[i] = activationFunction(dot(self.weights[i], inputs, self.inputSize)
+                                            + self.biases[i])
 
         return results

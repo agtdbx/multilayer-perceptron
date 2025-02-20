@@ -6,12 +6,12 @@
 #    By: aderouba <aderouba@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/20 15:14:35 by aderouba          #+#    #+#              #
-#    Updated: 2025/02/20 16:06:36 by aderouba         ###   ########.fr        #
+#    Updated: 2025/02/20 16:15:35 by aderouba         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 from network.layer import Layer
-
+from network.sigmoid import sigmoid
 
 class NeuralNetwork:
     """
@@ -62,14 +62,15 @@ class NeuralNetwork:
         return (weigths, biases)
 
 
-    def forward(self, inputs: list[float]) -> list[float]:
+    def forward(self, inputs: list[float], activationFunction: function=sigmoid) -> list[float]:
         """
-        Method to process inputs through the neurla network.
+        Method to process inputs through the neural network.
         @param  inputs  The input vector.
+        @param  activationFunction  The activation function, by default sigmoid.
         @return The network result.
         """
         # Give inputs to first layer, and layer result to the next layer.
         for layer in self.layers:
-            inputs = layer.forward(inputs)
+            inputs = layer.forward(inputs, activationFunction)
 
         return inputs

@@ -6,11 +6,11 @@
 #    By: aderouba <aderouba@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/20 15:14:35 by aderouba          #+#    #+#              #
-#    Updated: 2025/02/20 16:15:35 by aderouba         ###   ########.fr        #
+#    Updated: 2025/02/20 18:52:07 by aderouba         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-from network.layer import Layer
+from network.layer import   Layer
 from network.sigmoid import sigmoid
 
 class NeuralNetwork:

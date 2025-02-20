@@ -1,0 +1,86 @@
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    parse.py                                           :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: aderouba <aderouba@student.42.fr>          +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2025/02/13 17:27:15 by aderouba          #+#    #+#              #
+#    Updated: 2025/02/20 19:24:15 by aderouba         ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
+from define import          NUMBER_OF_COLUMN
+from parsing.print import   printError
+from parsing.string import  strToInt, strToFloat, strToResult
+
+
+def parseData(fileContent: str) -> list[tuple[int, int]]:
+    """
+    Function for parse the data file content and return a list of these data,
+    like this [(mileage, price),...].
+    Print it's error.
+    @param  fileContent The file content to parse
+    @return The file parsed, or None in case of error.
+    """
+    # Split file by line
+    lines = fileContent.split("\n")
+
+    # Error if file is empty
+    if len(lines) == 0:
+        printError("file is empty")
+        return None
+
+    # Parse all other lines
+    data = []
+    lineNumber = 1
+    for line in lines:
+        # If a line is empty, skip it
+        if line == "":
+            continue
+
+        # Parse a data line. Return None in case of error
+        dataLine = _parseLineData(line, lineNumber)
+        if dataLine == None:
+            return None
+        data.append(dataLine)
+        lineNumber += 1
+
+    return data
+
+
+def _parseLineData(line: str, lineNumber: int) -> tuple[list, int]:
+    """
+    Function for parse a line from data as a tupple like (input lst, result).
+    Print it's error.
+    @param  line    The line to parse
+    @param  line    The line number for the error message.
+    @return The line parsed, or None in case or error.
+    """
+    values = line.split(',')
+    if len(values) != NUMBER_OF_COLUMN:
+        return None
+
+    inputs = []
+    # Parse first int
+    value = strToInt(values[0])
+    if value == None:
+        printError(f"[l{lineNumber};c1] - '{values[0]}' isn't an int")
+        return None
+    inputs.append(value)
+
+    # Parse result
+    result = strToResult(values[1])
+    if result == None:
+        printError(f"[l{lineNumber};c2] - '{values[1]}' isn't a result (B or M)")
+        return None
+
+    # Parse all remaining float
+    for i in range(2, NUMBER_OF_COLUMN):
+        value = strToFloat(values[i])
+        if value == None:
+            printError(f"[l{lineNumber};c{i + 1}] - '{values[i]}' isn't a float")
+            return None
+        inputs.append(value)
+
+    return (inputs, result)

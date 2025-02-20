@@ -23,4 +23,8 @@ pip install -r requierements.txt
 ```
 
 ## Usage
-
+### Split dataset
+Script for split the dataset into two part. One for training, and the other for validating.
+```
+python3 splitData.py <data_path.cvs> <percentage of data for training>
+```

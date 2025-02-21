@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    layer.py                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: aderouba <aderouba@student.42.fr>          +#+  +:+       +#+         #
+#    By: gugus <gugus@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/20 15:14:17 by aderouba          #+#    #+#              #
-#    Updated: 2025/02/20 16:15:13 by aderouba         ###   ########.fr        #
+#    Updated: 2025/02/21 15:46:31 by gugus            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -73,7 +73,7 @@ class Layer:
         @param  activationFunction  The activation function, such as sigmoid or ReLU.
         @return The result of computation.
         """
-        results = [0.0] * self.inputSize
+        results = [0.0] * self.nbNeurons
 
         # For each neurons, apply weigths, bias and compute sigmoid
         for i in range(self.nbNeurons):

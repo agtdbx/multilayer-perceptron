@@ -28,3 +28,8 @@ Script for split the dataset into two part. One for training, and the other for 
 ```
 python3 splitData.py <data_path.cvs> <percentage of data for training>
 ```
+### Training
+Script for training the neural network.
+```
+python3 training.py
+```

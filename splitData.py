@@ -6,11 +6,12 @@
 #    By: gugus <gugus@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/20 17:54:23 by aderouba          #+#    #+#              #
-#    Updated: 2025/02/21 15:04:56 by gugus            ###   ########.fr        #
+#    Updated: 2025/02/21 15:11:51 by gugus            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-from define import          NUMBER_OF_COLUMN
+from define import          NUMBER_OF_COLUMN, TRAINING_DATA_FILE,\
+                            VALIDATION_DATA_FILE
 from parsing.file import    readFile, writeInFile
 from parsing.parse import   parseData
 from parsing.print import   printError
@@ -89,5 +90,5 @@ for i in range(nbData):
     else:
         validationData += strValues
 
-writeInFile("trainingData.csv", trainingData)
-writeInFile("validationData.csv", validationData)
+writeInFile(TRAINING_DATA_FILE, trainingData)
+writeInFile(VALIDATION_DATA_FILE, validationData)

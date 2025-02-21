@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    neuralNetwork.py                                   :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: aderouba <aderouba@student.42.fr>          +#+  +:+       +#+         #
+#    By: gugus <gugus@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/20 15:14:35 by aderouba          #+#    #+#              #
-#    Updated: 2025/02/20 18:52:07 by aderouba         ###   ########.fr        #
+#    Updated: 2025/02/21 16:47:44 by gugus            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -46,23 +46,20 @@ class NeuralNetwork:
             self.layers[i].loadParameters(weights[i], biases[i])
 
 
-    def getParameters(self) -> tuple[list[list[list[float]]], list[list[float]]]:
+    def getParameters(self) -> list[tuple[list[list[float]], list[float]]]:
         """
         Method to get the network's parameters.
-        @return A tupple as (weight matrix, bias vector).
+        @return A list as [(weight matrix, bias vector), ..].
         """
-        weigths = []
-        biases = []
+        result = []
 
         for layer in self.layers:
-            w, b = layer.getParameters()
-            weigths.append(w)
-            biases.append(b)
+            result.append(layer.getParameters())
 
-        return (weigths, biases)
+        return result
 
 
-    def forward(self, inputs: list[float], activationFunction: function=sigmoid) -> list[float]:
+    def forward(self, inputs: list[float], activationFunction=sigmoid) -> list[float]:
         """
         Method to process inputs through the neural network.
         @param  inputs  The input vector.

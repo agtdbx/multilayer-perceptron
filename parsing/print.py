@@ -3,18 +3,19 @@
 #                                                         :::      ::::::::    #
 #    print.py                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: aderouba <aderouba@student.42.fr>          +#+  +:+       +#+         #
+#    By: gugus <gugus@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/13 17:27:12 by aderouba          #+#    #+#              #
-#    Updated: 2025/02/20 17:45:18 by aderouba         ###   ########.fr        #
+#    Updated: 2025/02/21 14:55:39 by gugus            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 import sys
 
-def printError(message: str):
+def printError(message: str, prePrint: str = "Error"):
     """
     Function for print an error on stderr.
-    @param  message The message to print
+    @param  message The message to print.
+    @param  prePrint The string before the :, "Error" by default.
     """
-    print(f"Error : {message}", file=sys.stderr)
+    print(f"{prePrint} : {message}", file=sys.stderr)

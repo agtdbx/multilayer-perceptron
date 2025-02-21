@@ -6,7 +6,7 @@
 #    By: gugus <gugus@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/20 15:14:35 by aderouba          #+#    #+#              #
-#    Updated: 2025/02/21 16:47:44 by gugus            ###   ########.fr        #
+#    Updated: 2025/02/21 18:53:30 by gugus            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -35,15 +35,18 @@ class NeuralNetwork:
             inputSize = layerSize
 
 
-    def loadParameters(self, weights: list[list[list[float]]], biases: list[list[float]]):
+    def loadParameters(self, params: list[tuple[list[list[float]], list[float]]]) -> bool:
         """
         Method to load weights and biases into the network.
-        @param  weights The list of weigth matrix.
-        @param  biases  The list of bias vector.
+        @param  params  The list of tupple (weigth matrix, bias vector).
+        @return False in case or error, True else.
         """
         # Give parameters to each layer
         for i in range(self.nbLayers):
-            self.layers[i].loadParameters(weights[i], biases[i])
+            if not self.layers[i].loadParameters(params[i][0], params[i][1]):
+                return False
+
+        return True
 
 
     def getParameters(self) -> list[tuple[list[list[float]], list[float]]]:

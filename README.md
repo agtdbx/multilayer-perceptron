@@ -33,3 +33,8 @@ Script for training the neural network.
 ```
 python3 training.py
 ```
+### Validation
+Script for validate the neural network training.
+```
+python3 validation.py
+```

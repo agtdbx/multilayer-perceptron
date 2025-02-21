@@ -6,9 +6,11 @@
 #    By: gugus <gugus@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/20 15:14:17 by aderouba          #+#    #+#              #
-#    Updated: 2025/02/21 15:46:31 by gugus            ###   ########.fr        #
+#    Updated: 2025/02/21 18:53:09 by gugus            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
+
+from parsing.print import printError
 
 def dot(vec1: list[float], vec2: list[float], size: int) -> float:
     """
@@ -48,14 +50,30 @@ class Layer:
         self.inputSize = inputSize
 
 
-    def loadParameters(self, weights: list[list[float]], biases: list[float]):
+    def loadParameters(self, weights: list[list[float]], biases: list[float]) -> bool:
         """
         Method to load weights and biases into the layer.
+        Print it's error.
         @param  weights The weight matrix.
         @param  biases  The vector of bias.
+        @return False in case or error, True else.
         """
+        if len(weights) != self.nbNeurons:
+            printError("bad number of weigth vectors")
+            return False
+
+        for w in weights:
+            if len(w) != self.inputSize:
+                printError("bad size of weigth vector")
+                return False
+
+        if len(biases) != self.nbNeurons:
+            printError("bad size of bias vector")
+            return False
+
         self.weights = weights
         self.biases = biases
+        return True
 
 
     def getParameters(self) -> tuple[list[list[float]], list[float]]:

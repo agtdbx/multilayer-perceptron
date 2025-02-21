@@ -3,16 +3,17 @@
 #                                                         :::      ::::::::    #
 #    parse.py                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: aderouba <aderouba@student.42.fr>          +#+  +:+       +#+         #
+#    By: gugus <gugus@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/13 17:27:15 by aderouba          #+#    #+#              #
-#    Updated: 2025/02/20 19:24:15 by aderouba         ###   ########.fr        #
+#    Updated: 2025/02/21 18:52:58 by gugus            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 from define import          NUMBER_OF_COLUMN
 from parsing.print import   printError
-from parsing.string import  strToInt, strToFloat, strToResult
+from parsing.string import  strToInt, strToFloat, strToResult,\
+                            strToVector, strToMatrix
 
 
 def parseData(fileContent: str) -> list[tuple[int, int]]:
@@ -49,6 +50,40 @@ def parseData(fileContent: str) -> list[tuple[int, int]]:
     return data
 
 
+def parseNNparams(fileContent: str) -> list[tuple[list[list[float]], list[float]]]:
+    """
+    Function for parse the network params file content and return a list tuples
+    like [(weigth matrix, bias vector),...].
+    Print it's error.
+    @param  fileContent The file content to parse
+    @return The file parsed, or None in case of error.
+    """
+    # Split file by line
+    lines = fileContent.split("\n")
+
+    # Error if file is empty
+    if len(lines) == 0:
+        printError("file is empty")
+        return None
+
+    # Parse all other lines
+    result = []
+    lineNumber = 1
+    for line in lines:
+        # If a line is empty, skip it
+        if line == "":
+            continue
+
+        # Parse a data line. Return None in case of error
+        dataLine = _parseLineNNparams(line, lineNumber)
+        if dataLine == None:
+            return None
+        result.append(dataLine)
+        lineNumber += 1
+
+    return result
+
+
 def _parseLineData(line: str, lineNumber: int) -> tuple[list, int]:
     """
     Function for parse a line from data as a tupple like (input lst, result).
@@ -59,6 +94,7 @@ def _parseLineData(line: str, lineNumber: int) -> tuple[list, int]:
     """
     values = line.split(',')
     if len(values) != NUMBER_OF_COLUMN:
+        printError(f"[l{lineNumber};c1] - bad line format")
         return None
 
     inputs = []
@@ -84,3 +120,30 @@ def _parseLineData(line: str, lineNumber: int) -> tuple[list, int]:
         inputs.append(value)
 
     return (inputs, result)
+
+
+def _parseLineNNparams(line: str, lineNumber: int) -> tuple[list[float], int]:
+    """
+    Function for parse a line from network params as a tupple
+    like (weights matrix, bias vector).
+    Print it's error.
+    @param  line    The line to parse
+    @param  line    The line number for the error message.
+    @return The line parsed, or None in case or error.
+    """
+    values = line.split('|')
+    if len(values) != 2:
+        printError(f"[l{lineNumber};c1] - bad line format")
+        return None
+
+    weigths = strToMatrix(values[0])
+    if weigths == None:
+        printError(f"[l{lineNumber};c1] - bad weight matrix format")
+        return None
+
+    biases = strToVector(values[1])
+    if biases == None:
+        printError(f"[l{lineNumber};c1] - bad bias vector format")
+        return None
+
+    return (weigths, biases)

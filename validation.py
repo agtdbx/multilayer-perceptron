@@ -6,7 +6,7 @@
 #    By: gugus <gugus@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/21 15:08:58 by gugus             #+#    #+#              #
-#    Updated: 2025/02/21 18:53:59 by gugus            ###   ########.fr        #
+#    Updated: 2025/02/21 19:08:09 by gugus            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -48,9 +48,10 @@ nbData = len(datas)
 nbError = 0
 
 for inputs, result in datas:
-    NNresult = neuralNetwork.forward(inputs)[0]
+    NNresult = neuralNetwork.forward(inputs)
 
-    if abs(NNresult - result) > ERROR_PRECISION:
+    if (NNresult[0] <= NNresult[1]) != result:
         nbError += 1
+
 
 print(f"{nbError} errors on {nbData} datas ({(nbError / nbData) * 100:.2f}%)")

@@ -6,12 +6,12 @@
 #    By: gugus <gugus@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/20 15:14:35 by aderouba          #+#    #+#              #
-#    Updated: 2025/02/24 18:18:11 by gugus            ###   ########.fr        #
+#    Updated: 2025/02/24 21:15:59 by gugus            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 from network.layer import   Layer
-from network.sigmoid import sigmoid
+from network.sigmoid import sigmoid, sigmoidDerivate
 
 class NeuralNetwork:
     """
@@ -27,12 +27,14 @@ class NeuralNetwork:
         if self.nbLayers < 2:
             raise ValueError("You need to have at least 2 layers for a neural network")
 
+        self.nbNeurons = 0
         # Layers creation
         self.layers: list[Layer] = []
         inputSize = layersSize[0]
         for layerSize in layersSize:
             self.layers.append(Layer(inputSize, layerSize))
             inputSize = layerSize
+            self.nbNeurons += layerSize
 
         self.inputSize = layersSize[0]
         self.outputSize = layersSize[-1]
@@ -96,3 +98,46 @@ class NeuralNetwork:
 
         return inputs, hiddenResults
 
+
+    def computeGradients(self, derivateLoss: float, inputs: list[float],
+                         hiddenResults: list[tuple[float, float]],
+                         derivateFunction=sigmoidDerivate) -> tuple[list[list[float]], list[float]]:
+        """
+        Method to compute the gradient by back propagation.
+        @param  derivateLoss        The derivate loss of the current result.
+        @param  inputs              The inputs given to the neural network.
+        @param  hiddenResults       The hidden result save from forwardLearning method.
+        @param  derivateFunction    The derivation of the activation function for forward.
+        @return The tuple of gradient like (weigths gradient, biases gradient).
+        """
+        gradientWeights = [None] * self.nbNeurons
+        gradientBiases = [None] * self.nbNeurons
+
+        # Compute gradient per layer
+        l = self.nbLayers - 1
+        n_id = self.nbNeurons
+        while l >= 0:
+            z_lst = hiddenResults[l][1]
+            inputSize = self.layers[l].inputSize
+            n_id -= self.layers[l].nbNeurons
+            for i in range(self.layers[l].nbNeurons):
+                z = z_lst[i]
+                da = derivateFunction(z)
+
+                # Weights gradients
+                weightsGradient = []
+                for w_id in range(inputSize):
+                    if l > 0:
+                        dz = hiddenResults[l - 1][0][w_id]
+                    else:
+                        inputs[w_id]
+                    dLossWeigth = dz * da * derivateLoss
+                    weightsGradient.append(dLossWeigth)
+                gradientWeights[n_id + i] = weightsGradient
+
+                # Bias gradient
+                gradientBiases[n_id + i] = da * derivateLoss
+
+            l -= 1
+
+        return (gradientWeights, gradientBiases)

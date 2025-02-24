@@ -6,7 +6,7 @@
 #    By: gugus <gugus@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/13 17:27:15 by aderouba          #+#    #+#              #
-#    Updated: 2025/02/21 18:52:58 by gugus            ###   ########.fr        #
+#    Updated: 2025/02/24 20:52:31 by gugus            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,7 +16,7 @@ from parsing.string import  strToInt, strToFloat, strToResult,\
                             strToVector, strToMatrix
 
 
-def parseData(fileContent: str) -> list[tuple[int, int]]:
+def parseData(fileContent: str) -> list[tuple[list[float], int, int]]:
     """
     Function for parse the data file content and return a list of these data,
     like this [(mileage, price),...].
@@ -84,9 +84,9 @@ def parseNNparams(fileContent: str) -> list[tuple[list[list[float]], list[float]
     return result
 
 
-def _parseLineData(line: str, lineNumber: int) -> tuple[list, int]:
+def _parseLineData(line: str, lineNumber: int) -> tuple[list[float], int, int]:
     """
-    Function for parse a line from data as a tupple like (input lst, result).
+    Function for parse a line from data as a tupple like (input lst, result, number).
     Print it's error.
     @param  line    The line to parse
     @param  line    The line number for the error message.
@@ -99,11 +99,10 @@ def _parseLineData(line: str, lineNumber: int) -> tuple[list, int]:
 
     inputs = []
     # Parse first int
-    value = strToInt(values[0])
-    if value == None:
+    number = strToInt(values[0])
+    if number == None:
         printError(f"[l{lineNumber};c1] - '{values[0]}' isn't an int")
         return None
-    inputs.append(value)
 
     # Parse result
     result = strToResult(values[1])
@@ -119,7 +118,7 @@ def _parseLineData(line: str, lineNumber: int) -> tuple[list, int]:
             return None
         inputs.append(value)
 
-    return (inputs, result)
+    return (inputs, result, number)
 
 
 def _parseLineNNparams(line: str, lineNumber: int) -> tuple[list[float], int]:

@@ -6,7 +6,7 @@
 #    By: gugus <gugus@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/20 17:54:23 by aderouba          #+#    #+#              #
-#    Updated: 2025/02/21 15:11:51 by gugus            ###   ########.fr        #
+#    Updated: 2025/02/24 20:42:13 by gugus            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -75,8 +75,8 @@ validationData = ""
 resultChar = "BM"
 for i in range(nbData):
     values = parsedData[i]
-    strValues = f"{values[0][0]},{resultChar[values[1]]}"
-    for j in range(1, NUMBER_OF_COLUMN - 1):
+    strValues = f"{values[2]},{resultChar[values[1]]}"
+    for j in range(0, NUMBER_OF_COLUMN - 2):
         value = values[0][j]
         intVal = int(value)
         if intVal == value:

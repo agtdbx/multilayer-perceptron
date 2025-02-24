@@ -6,7 +6,7 @@
 #    By: gugus <gugus@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/20 15:14:17 by aderouba          #+#    #+#              #
-#    Updated: 2025/02/24 18:18:04 by gugus            ###   ########.fr        #
+#    Updated: 2025/02/24 18:34:01 by gugus            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -114,8 +114,7 @@ class Layer:
 
         # For each neurons, apply weigths, bias and compute sigmoid
         for i in range(self.nbNeurons):
-            hiddenResults[i] = dot(self.weights[i], inputs, self.inputSize)\
-                                + self.biases[i]
+            hiddenResults[i] = dot(self.weights[i], inputs, self.inputSize) + self.biases[i]
             results[i] = activationFunction(hiddenResults[i])
 
         return results, hiddenResults

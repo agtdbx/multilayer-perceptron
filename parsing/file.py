@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    file.py                                            :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: aderouba <aderouba@student.42.fr>          +#+  +:+       +#+         #
+#    By: gugus <gugus@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/13 17:27:19 by aderouba          #+#    #+#              #
-#    Updated: 2025/02/20 17:46:51 by aderouba         ###   ########.fr        #
+#    Updated: 2025/02/24 16:14:09 by gugus            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -36,7 +36,7 @@ def readFile(path: str) -> str:
         printError(f"can't read file '{path}'")
         content = None
 
-    # close file
+    # Close file
     file.close()
 
     return content

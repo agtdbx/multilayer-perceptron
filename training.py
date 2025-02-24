@@ -6,15 +6,17 @@
 #    By: gugus <gugus@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/21 15:08:58 by gugus             #+#    #+#              #
-#    Updated: 2025/02/21 16:48:25 by gugus            ###   ########.fr        #
+#    Updated: 2025/02/24 17:24:22 by gugus            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-from define import          TRAINING_DATA_FILE, PARAMS_FILE, LAYERS
-from parsing.file import    readFile, writeInFile
-from parsing.parse import   parseData
-from parsing.string import  vectorToStr, matrixToStr
-from network.neuralNetwork import NeuralNetwork
+from define import                  TRAINING_DATA_FILE, PARAMS_FILE, LAYERS,\
+                                    LEARNING_LOOP, LEARNING_RATIO
+from parsing.file import            readFile, writeInFile
+from parsing.parse import           parseData
+from parsing.string import          vectorToStr, matrixToStr
+from network.loss import            computeLoss
+from network.neuralNetwork import   NeuralNetwork
 
 # Get data
 dataPath = ""
@@ -32,7 +34,10 @@ neuralNetwork = NeuralNetwork(LAYERS)
 
 
 # Gradient descent
-# TODO: Gradient descent
+nbData = len(datas)
+for i in range(LEARNING_LOOP):
+    loss = computeLoss(neuralNetwork, datas, nbData)
+    print(f"loop {i} : loss {loss}")
 
 
 # Save params

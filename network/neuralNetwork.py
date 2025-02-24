@@ -6,7 +6,7 @@
 #    By: gugus <gugus@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/20 15:14:35 by aderouba          #+#    #+#              #
-#    Updated: 2025/02/21 18:53:30 by gugus            ###   ########.fr        #
+#    Updated: 2025/02/24 15:50:15 by gugus            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -33,6 +33,9 @@ class NeuralNetwork:
         for layerSize in layersSize:
             self.layers.append(Layer(inputSize, layerSize))
             inputSize = layerSize
+
+        self.inputSize = layersSize[0]
+        self.outputSize = layersSize[-1]
 
 
     def loadParameters(self, params: list[tuple[list[list[float]], list[float]]]) -> bool:

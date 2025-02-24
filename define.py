@@ -6,7 +6,7 @@
 #    By: gugus <gugus@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/20 18:02:30 by aderouba          #+#    #+#              #
-#    Updated: 2025/02/21 18:59:47 by gugus            ###   ########.fr        #
+#    Updated: 2025/02/24 17:02:35 by gugus            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,4 +20,5 @@ PARAMS_FILE = ".NNparams"
 
 # Neural network defines
 LAYERS = [NUMBER_OF_COLUMN - 1, 8, 8, 2]
-ERROR_PRECISION = 0.1
+LEARNING_LOOP = 1
+LEARNING_RATIO = 1.0

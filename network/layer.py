@@ -6,7 +6,7 @@
 #    By: gugus <gugus@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/20 15:14:17 by aderouba          #+#    #+#              #
-#    Updated: 2025/02/21 18:53:09 by gugus            ###   ########.fr        #
+#    Updated: 2025/02/24 18:18:04 by gugus            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -99,3 +99,23 @@ class Layer:
                                             + self.biases[i])
 
         return results
+
+
+    def forwardLearning(self, inputs: list[float],
+                        activationFunction) -> tuple[list[float], list[float]]:
+        """
+        A method to compute the inputs throw the layer when learning.
+        @param  inputs              The inputs to process.
+        @param  activationFunction  The activation function, such as sigmoid or ReLU.
+        @return The result of computation and hidden results for back propagation.
+        """
+        hiddenResults = [0.0] * self.nbNeurons
+        results = [0.0] * self.nbNeurons
+
+        # For each neurons, apply weigths, bias and compute sigmoid
+        for i in range(self.nbNeurons):
+            hiddenResults[i] = dot(self.weights[i], inputs, self.inputSize)\
+                                + self.biases[i]
+            results[i] = activationFunction(hiddenResults[i])
+
+        return results, hiddenResults

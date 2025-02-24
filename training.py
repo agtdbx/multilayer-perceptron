@@ -6,7 +6,7 @@
 #    By: gugus <gugus@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/21 15:08:58 by gugus             #+#    #+#              #
-#    Updated: 2025/02/24 17:24:22 by gugus            ###   ########.fr        #
+#    Updated: 2025/02/24 18:32:09 by gugus            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -33,10 +33,24 @@ if datas == None:
 neuralNetwork = NeuralNetwork(LAYERS)
 
 
+# Compute wanted output for data
+tmp = [(1, 0), (0, 1)]
+dataResults = []
+for _, result in datas:
+    dataResults.append(tmp[result])
+
+
 # Gradient descent
 nbData = len(datas)
 for i in range(LEARNING_LOOP):
-    loss = computeLoss(neuralNetwork, datas, nbData)
+    # Compute result from data
+    NNresults = []
+    for inputs, _ in datas:
+        NNresult, hiddenResult = neuralNetwork.forwardLearning(inputs)
+        NNresults.append(NNresult)
+
+    # Compute loss
+    loss = computeLoss(dataResults, NNresults)
     print(f"loop {i} : loss {loss}")
 
 

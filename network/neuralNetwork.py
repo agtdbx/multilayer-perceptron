@@ -6,7 +6,7 @@
 #    By: gugus <gugus@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/20 15:14:35 by aderouba          #+#    #+#              #
-#    Updated: 2025/02/24 15:50:15 by gugus            ###   ########.fr        #
+#    Updated: 2025/02/24 18:18:11 by gugus            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -77,3 +77,22 @@ class NeuralNetwork:
             inputs = layer.forward(inputs, activationFunction)
 
         return inputs
+
+
+    def forwardLearning(self, inputs: list[float],
+                        activationFunction=sigmoid) -> tuple[list[float], list[tuple[float, float]]]:
+        """
+        Method to process inputs through the neural network when learning.
+        @param  inputs  The input vector.
+        @param  activationFunction  The activation function, by default sigmoid.
+        @return The network result and hidden results for back propagation.
+        """
+        hiddenResults = []
+
+        # Give inputs to first layer, and layer result to the next layer.
+        for layer in self.layers:
+            inputs, hiddenRes = layer.forwardLearning(inputs, activationFunction)
+            hiddenResults.append((inputs, hiddenRes))
+
+        return inputs, hiddenResults
+

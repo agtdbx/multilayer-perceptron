@@ -6,11 +6,12 @@
 #    By: gugus <gugus@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/21 15:08:58 by gugus             #+#    #+#              #
-#    Updated: 2025/02/24 20:53:07 by gugus            ###   ########.fr        #
+#    Updated: 2025/02/25 14:35:43 by gugus            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-from define import                  VALIDATION_DATA_FILE, PARAMS_FILE, LAYERS
+from define import                  VALIDATION_DATA_FILE, PARAMS_FILE, LAYERS,\
+                                    INPUT_SIZE
 from parsing.file import            readFile
 from parsing.parse import           parseData, parseNNparams
 from network.neuralNetwork import   NeuralNetwork

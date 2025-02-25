@@ -6,7 +6,7 @@
 #    By: gugus <gugus@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/20 15:14:17 by aderouba          #+#    #+#              #
-#    Updated: 2025/02/24 18:34:01 by gugus            ###   ########.fr        #
+#    Updated: 2025/02/25 13:14:08 by gugus            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -118,3 +118,15 @@ class Layer:
             results[i] = activationFunction(hiddenResults[i])
 
         return results, hiddenResults
+
+
+    def applyGradient(self, gradientWeights: list[list[float]], gradientBiases: list[float]):
+        """
+        Method to apply the gradient to weigths and biases.
+        @param  gradientWeights The gradient to apply to weigths.
+        @param  gradientBiases  The gradient to apply to biases.
+        """
+        for i in range(self.nbNeurons):
+            for w in range(self.inputSize):
+                self.weights[i][w] -= gradientWeights[i][w]
+            self.biases[i] -= gradientBiases[i]

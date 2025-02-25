@@ -6,7 +6,7 @@
 #    By: gugus <gugus@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/20 15:14:35 by aderouba          #+#    #+#              #
-#    Updated: 2025/02/24 21:15:59 by gugus            ###   ########.fr        #
+#    Updated: 2025/02/25 13:13:13 by gugus            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -141,3 +141,17 @@ class NeuralNetwork:
             l -= 1
 
         return (gradientWeights, gradientBiases)
+
+
+    def applyGradient(self, gradientWeights: list[list[float]],
+                      gradientBiases: list[float]):
+        """
+        Method to apply the gradient to weigths and biases to each layer.
+        @param  gradientWeights The gradient to apply to weigths.
+        @param  gradientBiases  The gradient to apply to biases.
+        """
+        start = 0
+        for l in range(self.nbLayers):
+            end = start + self.layers[l].nbNeurons
+            self.layers[l].applyGradient(gradientWeights[start:end], gradientBiases[start:end])
+            start = end

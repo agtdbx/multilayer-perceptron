@@ -6,7 +6,7 @@
 #    By: gugus <gugus@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/21 15:08:58 by gugus             #+#    #+#              #
-#    Updated: 2025/02/24 21:11:32 by gugus            ###   ########.fr        #
+#    Updated: 2025/02/25 14:36:24 by gugus            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -85,19 +85,19 @@ for nbLoop in range(LEARNING_LOOP):
         for k in range(len(dLossWeigths[j])):
             gradientWeights[j][k] = gradientWeights[j][k] * invNbData  * LEARNING_RATE
         gradientBiases[j] = gradientBiases[j] * invNbData  * LEARNING_RATE
-    # TODO: Apply gradient
+
+    # Apply gradient
+    neuralNetwork.applyGradient(gradientWeights, gradientBiases)
 
     # Compute loss
     loss = computeLoss(dataResults, NNresults)
-    print(f"loop {nbLoop} : loss {loss}")
+    print(f"loop {nbLoop + 1} : loss {loss}")
 
 
-# TODO: Unnormalize weights and bias
-
-
-# Save params
+# TODO: Unnormalize weights and biases
 NNparams = neuralNetwork.getParameters()
 
+# Save params
 strParams = ""
 for weightMatrix, biasVector in NNparams:
     strWeigths = matrixToStr(weightMatrix)

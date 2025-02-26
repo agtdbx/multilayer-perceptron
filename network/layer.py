@@ -3,14 +3,16 @@
 #                                                         :::      ::::::::    #
 #    layer.py                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: gugus <gugus@student.42.fr>                +#+  +:+       +#+         #
+#    By: aderouba <aderouba@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/20 15:14:17 by aderouba          #+#    #+#              #
-#    Updated: 2025/02/25 13:14:08 by gugus            ###   ########.fr        #
+#    Updated: 2025/02/26 12:02:41 by aderouba         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 from parsing.print import printError
+
+import random
 
 def dot(vec1: list[float], vec2: list[float], size: int) -> float:
     """
@@ -42,9 +44,18 @@ class Layer:
         """
         # Weight matrix initialization
         self.weights = [[0.0] * inputSize] * nbNeurons
+        # self.weights = []
+        # for _ in range(nbNeurons):
+        #     lst = []
+        #     for __ in range(inputSize):
+        #         lst.append(random.random())
+        #     self.weights.append(lst)
 
         # Bias vector initialization
         self.biases = [0.0] * nbNeurons
+        # self.biases = []
+        # for _ in range(nbNeurons):
+        #     self.biases.append(random.random())
 
         self.nbNeurons = nbNeurons
         self.inputSize = inputSize
@@ -128,5 +139,5 @@ class Layer:
         """
         for i in range(self.nbNeurons):
             for w in range(self.inputSize):
-                self.weights[i][w] -= gradientWeights[i][w]
-            self.biases[i] -= gradientBiases[i]
+                self.weights[i][w] += gradientWeights[i][w]
+            self.biases[i] += gradientBiases[i]

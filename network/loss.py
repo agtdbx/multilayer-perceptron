@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    loss.py                                            :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: gugus <gugus@student.42.fr>                +#+  +:+       +#+         #
+#    By: aderouba <aderouba@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/24 15:41:15 by gugus             #+#    #+#              #
-#    Updated: 2025/02/24 19:42:32 by gugus            ###   ########.fr        #
+#    Updated: 2025/02/26 12:02:35 by aderouba         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -72,6 +72,6 @@ def computeOneLossDerivate(result: tuple[float],
     for i in range(outputSize):
         y = result[i]
         p = NNresult[i]
-        loss += y / (log(10) * p) + (1 - y) / (log(10) * (1 - p))
+        loss += y / (log(10, 2) * p) + (1 - y) / (log(10, 2) * (1 - p))
 
-    return loss
+    return -loss

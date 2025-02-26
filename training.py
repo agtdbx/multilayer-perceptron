@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    training.py                                        :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: gugus <gugus@student.42.fr>                +#+  +:+       +#+         #
+#    By: aderouba <aderouba@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/21 15:08:58 by gugus             #+#    #+#              #
-#    Updated: 2025/02/25 14:36:24 by gugus            ###   ########.fr        #
+#    Updated: 2025/02/26 11:19:34 by aderouba         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -58,12 +58,20 @@ for nbLoop in range(LEARNING_LOOP):
     gradientWeights = [[]] * neuralNetwork.nbNeurons
     gradientBiases = [0.0] * neuralNetwork.nbNeurons
     NNresults = []
+    nbError = 0
     for i in range(nbData):
         inputs = datas[i][0]
         # Compute NN result
         NNresult, hiddenResult = neuralNetwork.forwardLearning(inputs)
         # Save result for loss computation
         NNresults.append(NNresult)
+
+        if datas[i][1] == 0:
+            if NNresult[0] <= NNresult[1]:
+                nbError += 1
+        else:
+            if NNresult[0] >= NNresult[1]:
+                nbError += 1
 
         # Compute loss
         derivateLoss = computeOneLossDerivate(dataResults[i], NNresult)
@@ -91,7 +99,7 @@ for nbLoop in range(LEARNING_LOOP):
 
     # Compute loss
     loss = computeLoss(dataResults, NNresults)
-    print(f"loop {nbLoop + 1} : loss {loss}")
+    print(f"loop {nbLoop + 1} : loss {loss}, errors {nbError:3}/{nbData:3}")
 
 
 # TODO: Unnormalize weights and biases

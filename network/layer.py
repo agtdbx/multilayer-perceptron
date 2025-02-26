@@ -6,7 +6,7 @@
 #    By: aderouba <aderouba@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/20 15:14:17 by aderouba          #+#    #+#              #
-#    Updated: 2025/02/26 12:02:41 by aderouba         ###   ########.fr        #
+#    Updated: 2025/02/26 12:51:08 by aderouba         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -59,6 +59,8 @@ class Layer:
 
         self.nbNeurons = nbNeurons
         self.inputSize = inputSize
+        self.hiddenResults = [0.0] * nbNeurons
+        self.results = [0.0] * nbNeurons
 
 
     def loadParameters(self, weights: list[list[float]], biases: list[float]) -> bool:
@@ -102,42 +104,44 @@ class Layer:
         @param  activationFunction  The activation function, such as sigmoid or ReLU.
         @return The result of computation.
         """
-        results = [0.0] * self.nbNeurons
+        self.inputs = inputs
+        self.hiddenResults = [0.0] * self.nbNeurons
+        self.results = [0.0] * self.nbNeurons
 
         # For each neurons, apply weigths, bias and compute sigmoid
         for i in range(self.nbNeurons):
-            results[i] = activationFunction(dot(self.weights[i], inputs, self.inputSize)
-                                            + self.biases[i])
+            self.hiddenResults[i] = dot(self.weights[i], inputs, self.inputSize) + self.biases[i]
+            self.results[i] = activationFunction(self.hiddenResults[i])
 
-        return results
-
-
-    def forwardLearning(self, inputs: list[float],
-                        activationFunction) -> tuple[list[float], list[float]]:
-        """
-        A method to compute the inputs throw the layer when learning.
-        @param  inputs              The inputs to process.
-        @param  activationFunction  The activation function, such as sigmoid or ReLU.
-        @return The result of computation and hidden results for back propagation.
-        """
-        hiddenResults = [0.0] * self.nbNeurons
-        results = [0.0] * self.nbNeurons
-
-        # For each neurons, apply weigths, bias and compute sigmoid
-        for i in range(self.nbNeurons):
-            hiddenResults[i] = dot(self.weights[i], inputs, self.inputSize) + self.biases[i]
-            results[i] = activationFunction(hiddenResults[i])
-
-        return results, hiddenResults
+        return self.results
 
 
-    def applyGradient(self, gradientWeights: list[list[float]], gradientBiases: list[float]):
-        """
-        Method to apply the gradient to weigths and biases.
-        @param  gradientWeights The gradient to apply to weigths.
-        @param  gradientBiases  The gradient to apply to biases.
-        """
-        for i in range(self.nbNeurons):
-            for w in range(self.inputSize):
-                self.weights[i][w] += gradientWeights[i][w]
-            self.biases[i] += gradientBiases[i]
+    # def forwardLearning(self, inputs: list[float],
+    #                     activationFunction) -> tuple[list[float], list[float]]:
+    #     """
+    #     A method to compute the inputs throw the layer when learning.
+    #     @param  inputs              The inputs to process.
+    #     @param  activationFunction  The activation function, such as sigmoid or ReLU.
+    #     @return The result of computation and hidden results for back propagation.
+    #     """
+    #     self.hiddenResults = [0.0] * self.nbNeurons
+    #     self.results = [0.0] * self.nbNeurons
+
+    #     # For each neurons, apply weigths, bias and compute sigmoid
+    #     for i in range(self.nbNeurons):
+    #         self.hiddenResults[i] = dot(self.weights[i], inputs, self.inputSize) + self.biases[i]
+    #         self.results[i] = activationFunction(self.hiddenResults[i])
+
+    #     return self.results, self.hiddenResults
+
+
+    # def applyGradient(self, gradientWeights: list[list[float]], gradientBiases: list[float]):
+    #     """
+    #     Method to apply the gradient to weigths and biases.
+    #     @param  gradientWeights The gradient to apply to weigths.
+    #     @param  gradientBiases  The gradient to apply to biases.
+    #     """
+    #     for i in range(self.nbNeurons):
+    #         for w in range(self.inputSize):
+    #             self.weights[i][w] += gradientWeights[i][w]
+    #         self.biases[i] += gradientBiases[i]

@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    neuralNetwork.py                                   :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: gugus <gugus@student.42.fr>                +#+  +:+       +#+         #
+#    By: aderouba <aderouba@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/20 15:14:35 by aderouba          #+#    #+#              #
-#    Updated: 2025/02/25 13:13:13 by gugus            ###   ########.fr        #
+#    Updated: 2025/02/26 12:54:38 by aderouba         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -81,77 +81,135 @@ class NeuralNetwork:
         return inputs
 
 
-    def forwardLearning(self, inputs: list[float],
-                        activationFunction=sigmoid) -> tuple[list[float], list[tuple[float, float]]]:
-        """
-        Method to process inputs through the neural network when learning.
-        @param  inputs  The input vector.
-        @param  activationFunction  The activation function, by default sigmoid.
-        @return The network result and hidden results for back propagation.
-        """
-        hiddenResults = []
-
-        # Give inputs to first layer, and layer result to the next layer.
-        for layer in self.layers:
-            inputs, hiddenRes = layer.forwardLearning(inputs, activationFunction)
-            hiddenResults.append((inputs, hiddenRes))
-
-        return inputs, hiddenResults
-
-
-    def computeGradients(self, derivateLoss: float, inputs: list[float],
-                         hiddenResults: list[tuple[float, float]],
-                         derivateFunction=sigmoidDerivate) -> tuple[list[list[float]], list[float]]:
+    def backprogatation(self,
+                        dLoss: float,
+                        derivateFunction=sigmoidDerivate
+                        )-> list[tuple[list[list[float]], list[float]]]:
         """
         Method to compute the gradient by back propagation.
-        @param  derivateLoss        The derivate loss of the current result.
-        @param  inputs              The inputs given to the neural network.
-        @param  hiddenResults       The hidden result save from forwardLearning method.
+        @param  dLoss               The derivation of the loss by the neural network result.
         @param  derivateFunction    The derivation of the activation function for forward.
-        @return The tuple of gradient like (weigths gradient, biases gradient).
+        @return The list of tuple of gradient like [(weigths gradient, biases gradient), ...].
         """
-        gradientWeights = [None] * self.nbNeurons
-        gradientBiases = [None] * self.nbNeurons
-
-        # Compute gradient per layer
+        gradients = [None] * self.nbLayers
         l = self.nbLayers - 1
-        n_id = self.nbNeurons
+        dLosses = [dLoss] * self.layers[l].nbNeurons
+
         while l >= 0:
-            z_lst = hiddenResults[l][1]
-            inputSize = self.layers[l].inputSize
-            n_id -= self.layers[l].nbNeurons
-            for i in range(self.layers[l].nbNeurons):
-                z = z_lst[i]
-                da = derivateFunction(z)
+            print(f"LAYER {l}")
+            layer = self.layers[l]
 
-                # Weights gradients
-                weightsGradient = []
-                for w_id in range(inputSize):
-                    if l > 0:
-                        dz = hiddenResults[l - 1][0][w_id]
-                    else:
-                        inputs[w_id]
-                    dLossWeigth = dz * da * derivateLoss
-                    weightsGradient.append(dLossWeigth)
-                gradientWeights[n_id + i] = weightsGradient
+            newDLosses = []
+            gradientWeights = []
+            gradientBiases = []
+            # For each neurons
+            for n in range(layer.nbNeurons):
+                print(f"  neuron {n}")
+                # Derivate of result by weighted sum
+                dA = derivateFunction(layer.hiddenResults[n])
 
-                # Bias gradient
-                gradientBiases[n_id + i] = da * derivateLoss
+                dIsum = 0
+                lst_dW = []
+                for i in range(layer.inputSize):
+                    # Derivate of weighted sum by weight
+                    dZ = layer.inputs[i]
+
+                    # Derivate of loss by weight
+                    dW = dZ * dA * dLosses[n]
+                    lst_dW.append(dW)
+
+                    # Derivate of loss by input
+                    dI = layer.weights[n][i] * dA * dLosses[n]
+                    dIsum += dI
+                gradientWeights.append(lst_dW)
+
+                # Derivate of loss by bias
+                dB = dA * dLosses[n]
+                gradientBiases.append(dB)
+
+                newDLosses.append(dIsum)
+
+            # Update dLosses
+            dLosses = newDLosses
+
+            gradients[n] = (gradientWeights, gradientBiases)
 
             l -= 1
 
-        return (gradientWeights, gradientBiases)
+        return gradients
 
 
-    def applyGradient(self, gradientWeights: list[list[float]],
-                      gradientBiases: list[float]):
-        """
-        Method to apply the gradient to weigths and biases to each layer.
-        @param  gradientWeights The gradient to apply to weigths.
-        @param  gradientBiases  The gradient to apply to biases.
-        """
-        start = 0
-        for l in range(self.nbLayers):
-            end = start + self.layers[l].nbNeurons
-            self.layers[l].applyGradient(gradientWeights[start:end], gradientBiases[start:end])
-            start = end
+    # def forwardLearning(self, inputs: list[float],
+    #                     activationFunction=sigmoid) -> tuple[list[float], list[tuple[float, float]]]:
+    #     """
+    #     Method to process inputs through the neural network when learning.
+    #     @param  inputs  The input vector.
+    #     @param  activationFunction  The activation function, by default sigmoid.
+    #     @return The network result and hidden results for back propagation.
+    #     """
+    #     hiddenResults = []
+
+    #     # Give inputs to first layer, and layer result to the next layer.
+    #     for layer in self.layers:
+    #         inputs, hiddenRes = layer.forwardLearning(inputs, activationFunction)
+    #         hiddenResults.append((inputs, hiddenRes))
+
+    #     return inputs, hiddenResults
+
+
+    # def computeGradients(self, derivateLoss: float, inputs: list[float],
+    #                      hiddenResults: list[tuple[float, float]],
+    #                      derivateFunction=sigmoidDerivate) -> tuple[list[list[float]], list[float]]:
+    #     """
+    #     Method to compute the gradient by back propagation.
+    #     @param  derivateLoss        The derivate loss of the current result.
+    #     @param  inputs              The inputs given to the neural network.
+    #     @param  hiddenResults       The hidden result save from forwardLearning method.
+    #     @param  derivateFunction    The derivation of the activation function for forward.
+    #     @return The tuple of gradient like (weigths gradient, biases gradient).
+    #     """
+    #     gradientWeights = [None] * self.nbNeurons
+    #     gradientBiases = [None] * self.nbNeurons
+
+    #     # Compute gradient per layer
+    #     l = self.nbLayers - 1
+    #     n_id = self.nbNeurons
+    #     while l >= 0:
+    #         z_lst = hiddenResults[l][1]
+    #         inputSize = self.layers[l].inputSize
+    #         n_id -= self.layers[l].nbNeurons
+    #         for i in range(self.layers[l].nbNeurons):
+    #             z = z_lst[i]
+    #             da = derivateFunction(z)
+
+    #             # Weights gradients
+    #             weightsGradient = []
+    #             for w_id in range(inputSize):
+    #                 if l > 0:
+    #                     dz = hiddenResults[l - 1][0][w_id]
+    #                 else:
+    #                     inputs[w_id]
+    #                 dLossWeigth = dz * da * derivateLoss
+    #                 weightsGradient.append(dLossWeigth)
+    #             gradientWeights[n_id + i] = weightsGradient
+
+    #             # Bias gradient
+    #             gradientBiases[n_id + i] = da * derivateLoss
+
+    #         l -= 1
+
+    #     return (gradientWeights, gradientBiases)
+
+
+    # def applyGradient(self, gradientWeights: list[list[float]],
+    #                   gradientBiases: list[float]):
+    #     """
+    #     Method to apply the gradient to weigths and biases to each layer.
+    #     @param  gradientWeights The gradient to apply to weigths.
+    #     @param  gradientBiases  The gradient to apply to biases.
+    #     """
+    #     start = 0
+    #     for l in range(self.nbLayers):
+    #         end = start + self.layers[l].nbNeurons
+    #         self.layers[l].applyGradient(gradientWeights[start:end], gradientBiases[start:end])
+    #         start = end

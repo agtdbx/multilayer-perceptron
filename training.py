@@ -6,7 +6,7 @@
 #    By: aderouba <aderouba@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/21 15:08:58 by gugus             #+#    #+#              #
-#    Updated: 2025/02/26 11:19:34 by aderouba         ###   ########.fr        #
+#    Updated: 2025/02/26 12:19:04 by aderouba         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -55,14 +55,15 @@ nbData = len(datas)
 invNbData = 1.0 / nbData
 for nbLoop in range(LEARNING_LOOP):
     # Compute result from data]
-    gradientWeights = [[]] * neuralNetwork.nbNeurons
-    gradientBiases = [0.0] * neuralNetwork.nbNeurons
+    # gradientWeights = [[]] * neuralNetwork.nbNeurons
+    # gradientBiases = [0.0] * neuralNetwork.nbNeurons
     NNresults = []
     nbError = 0
     for i in range(nbData):
         inputs = datas[i][0]
         # Compute NN result
-        NNresult, hiddenResult = neuralNetwork.forwardLearning(inputs)
+        # NNresult, hiddenResult = neuralNetwork.forwardLearning(inputs)
+        NNresult = neuralNetwork.forward(inputs)
         # Save result for loss computation
         NNresults.append(NNresult)
 
@@ -74,32 +75,33 @@ for nbLoop in range(LEARNING_LOOP):
                 nbError += 1
 
         # Compute loss
-        derivateLoss = computeOneLossDerivate(dataResults[i], NNresult)
+        dLoss = computeOneLossDerivate(dataResults[i], NNresult)
+        neuralNetwork.backprogatation(dLoss)
 
-        dLossWeigths, dLossBiases = neuralNetwork.computeGradients(derivateLoss, inputs, hiddenResult)
+    #     dLossWeigths, dLossBiases = neuralNetwork.computeGradients(derivateLoss, inputs, hiddenResult)
 
-        # Add derivate loss by weigths and bias to grandients
-        for j in range(neuralNetwork.nbNeurons):
-            if len(gradientWeights[j]) != 0:
-                for k in range(len(dLossWeigths[j])):
-                    gradientWeights[j][k] += dLossWeigths[j][k]
-            else:
-                for k in range(len(dLossWeigths[j])):
-                    gradientWeights[j].append(dLossWeigths[j][k])
-            gradientBiases[j] += dLossBiases[j]
+    #     # Add derivate loss by weigths and bias to grandients
+    #     for j in range(neuralNetwork.nbNeurons):
+    #         if len(gradientWeights[j]) != 0:
+    #             for k in range(len(dLossWeigths[j])):
+    #                 gradientWeights[j][k] += dLossWeigths[j][k]
+    #         else:
+    #             for k in range(len(dLossWeigths[j])):
+    #                 gradientWeights[j].append(dLossWeigths[j][k])
+    #         gradientBiases[j] += dLossBiases[j]
 
-    # Make grandient avg and multiply it by learning rate
-    for j in range(neuralNetwork.nbNeurons):
-        for k in range(len(dLossWeigths[j])):
-            gradientWeights[j][k] = gradientWeights[j][k] * invNbData  * LEARNING_RATE
-        gradientBiases[j] = gradientBiases[j] * invNbData  * LEARNING_RATE
+    # # Make grandient avg and multiply it by learning rate
+    # for j in range(neuralNetwork.nbNeurons):
+    #     for k in range(len(dLossWeigths[j])):
+    #         gradientWeights[j][k] = gradientWeights[j][k] * invNbData  * LEARNING_RATE
+    #     gradientBiases[j] = gradientBiases[j] * invNbData  * LEARNING_RATE
 
-    # Apply gradient
-    neuralNetwork.applyGradient(gradientWeights, gradientBiases)
+    # # Apply gradient
+    # neuralNetwork.applyGradient(gradientWeights, gradientBiases)
 
     # Compute loss
     loss = computeLoss(dataResults, NNresults)
-    print(f"loop {nbLoop + 1} : loss {loss}, errors {nbError:3}/{nbData:3}")
+    print(f"loop {nbLoop + 1:3} : loss {loss:.3f}, errors {nbError:3}/{nbData:3}")
 
 
 # TODO: Unnormalize weights and biases

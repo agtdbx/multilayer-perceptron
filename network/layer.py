@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    layer.py                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: aderouba <aderouba@student.42.fr>          +#+  +:+       +#+         #
+#    By: gugus <gugus@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/20 15:14:17 by aderouba          #+#    #+#              #
-#    Updated: 2025/02/26 12:51:08 by aderouba         ###   ########.fr        #
+#    Updated: 2025/02/26 14:32:38 by gugus            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -116,32 +116,13 @@ class Layer:
         return self.results
 
 
-    # def forwardLearning(self, inputs: list[float],
-    #                     activationFunction) -> tuple[list[float], list[float]]:
-    #     """
-    #     A method to compute the inputs throw the layer when learning.
-    #     @param  inputs              The inputs to process.
-    #     @param  activationFunction  The activation function, such as sigmoid or ReLU.
-    #     @return The result of computation and hidden results for back propagation.
-    #     """
-    #     self.hiddenResults = [0.0] * self.nbNeurons
-    #     self.results = [0.0] * self.nbNeurons
-
-    #     # For each neurons, apply weigths, bias and compute sigmoid
-    #     for i in range(self.nbNeurons):
-    #         self.hiddenResults[i] = dot(self.weights[i], inputs, self.inputSize) + self.biases[i]
-    #         self.results[i] = activationFunction(self.hiddenResults[i])
-
-    #     return self.results, self.hiddenResults
-
-
-    # def applyGradient(self, gradientWeights: list[list[float]], gradientBiases: list[float]):
-    #     """
-    #     Method to apply the gradient to weigths and biases.
-    #     @param  gradientWeights The gradient to apply to weigths.
-    #     @param  gradientBiases  The gradient to apply to biases.
-    #     """
-    #     for i in range(self.nbNeurons):
-    #         for w in range(self.inputSize):
-    #             self.weights[i][w] += gradientWeights[i][w]
-    #         self.biases[i] += gradientBiases[i]
+    def applyGradient(self, gradientWeights: list[list[float]], gradientBiases: list[float]):
+        """
+        Method to apply the gradient to weigths and biases.
+        @param  gradientWeights The gradient to apply to weigths.
+        @param  gradientBiases  The gradient to apply to biases.
+        """
+        for i in range(self.nbNeurons):
+            for w in range(self.inputSize):
+                self.weights[i][w] -= gradientWeights[i][w]
+            self.biases[i] -= gradientBiases[i]

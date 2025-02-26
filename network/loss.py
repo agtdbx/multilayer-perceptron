@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    loss.py                                            :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: aderouba <aderouba@student.42.fr>          +#+  +:+       +#+         #
+#    By: gugus <gugus@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/24 15:41:15 by gugus             #+#    #+#              #
-#    Updated: 2025/02/26 12:02:35 by aderouba         ###   ########.fr        #
+#    Updated: 2025/02/26 14:36:30 by gugus            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -67,11 +67,12 @@ def computeOneLossDerivate(result: tuple[float],
     """
     loss = 0.0
     outputSize = len(result)
+    ln10 = log(10, 2)
 
     # Compare network output with wanted one
     for i in range(outputSize):
         y = result[i]
         p = NNresult[i]
-        loss += y / (log(10, 2) * p) + (1 - y) / (log(10, 2) * (1 - p))
+        loss += y / (ln10 * p) + (y - 1) / (ln10 * (1 - p))
 
     return -loss

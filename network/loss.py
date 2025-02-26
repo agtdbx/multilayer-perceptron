@@ -6,11 +6,34 @@
 #    By: gugus <gugus@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/24 15:41:15 by gugus             #+#    #+#              #
-#    Updated: 2025/02/26 14:36:30 by gugus            ###   ########.fr        #
+#    Updated: 2025/02/26 18:48:53 by gugus            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-from math import log
+from math import log as logN
+
+
+def log(x: float) -> float:
+    """
+    Function to make a save version of log10 that return 0 in case of error.
+    @param  x   The number to make log.
+    @return The log number.
+    """
+    if x <= 0:
+        return 0
+    return logN(x, 10)
+
+
+def ln(x: float) -> float:
+    """
+    Function to make a save version of ln that return 0 in case of error.
+    @param  x   The number to make log.
+    @return The log number.
+    """
+    if x <= 0:
+        return 0
+    return logN(x)
+
 
 def computeLoss(results: list[tuple[float]],
                 NNresults: list[list[float]]) -> float:
@@ -29,7 +52,7 @@ def computeLoss(results: list[tuple[float]],
         for j in range(outputSize):
             y = results[i][j]
             p = NNresults[i][j]
-            loss += y * log(p, 10) + (1 - y) * log(1 - p, 10)
+            loss += y * log(p) + (1 - y) * log(1 - p)
 
     # Compute the average of the loss
     loss /= -nbData
@@ -67,7 +90,7 @@ def computeOneLossDerivate(result: tuple[float],
     """
     loss = 0.0
     outputSize = len(result)
-    ln10 = log(10, 2)
+    ln10 = ln(10)
 
     # Compare network output with wanted one
     for i in range(outputSize):

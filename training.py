@@ -6,7 +6,7 @@
 #    By: gugus <gugus@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/21 15:08:58 by gugus             #+#    #+#              #
-#    Updated: 2025/02/26 14:20:43 by gugus            ###   ########.fr        #
+#    Updated: 2025/02/26 18:36:58 by gugus            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -38,6 +38,8 @@ tmp = [(1, 0), (0, 1)]
 dataResults = []
 for _, result, _ in datas:
     dataResults.append(tmp[result])
+minimumLoss = computeLoss(dataResults, dataResults)
+print(f"minimum loss {minimumLoss}")
 
 
 # Normalize data

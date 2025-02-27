@@ -6,7 +6,7 @@
 #    By: gugus <gugus@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/24 15:41:15 by gugus             #+#    #+#              #
-#    Updated: 2025/02/27 12:33:57 by gugus            ###   ########.fr        #
+#    Updated: 2025/02/27 13:45:09 by gugus            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -35,8 +35,8 @@ def ln(x: float) -> float:
     return logN(x)
 
 
-def computeLoss(results: list[tuple[float]],
-                NNresults: list[list[float]]) -> float:
+def computeLoss(ys: list[float],
+                ps: list[float]) -> float:
     """
     Function to compute the loss of the network by cross entropy.
     @param  results     The list of wanted results.
@@ -44,15 +44,11 @@ def computeLoss(results: list[tuple[float]],
     @return The loss.
     """
     loss = 0.0
-    outputSize = len(results[0])
-    nbData = len(results)
+    nbData = len(ys)
 
-    for i in range(nbData):
+    for n in range(nbData):
         # Compare network output with wanted one
-        for j in range(outputSize):
-            y = results[i][j]
-            p = NNresults[i][j]
-            loss += y * log(p) + (1 - y) * log(1 - p)
+        loss += ys[n] * log(ps[n]) + (1 - ys[n]) * log(1 - ps[n])
 
     # Compute the average of the loss
     loss /= -nbData
@@ -60,44 +56,37 @@ def computeLoss(results: list[tuple[float]],
     return loss
 
 
-def computeOneLoss(result: tuple[float],
-                   NNresult: list[float]) -> float:
+def computeOneLoss(y: float,
+                   p: float) -> float:
     """
     Function to compute the loss of the network by cross entropy.
-    @param  results     The list of wanted results.
-    @param  NNresults   The list of neural networks results.
+    @param  y   The wanted results.
+    @param  p   The neural network result.
     @return The loss.
     """
     loss = 0.0
-    outputSize = len(result)
 
     # Compare network output with wanted one
-    for i in range(outputSize):
-        y = result[i]
-        p = NNresult[i]
-        loss += y * log(p, 10) + (1 - y) * log(1 - p, 10)
+    loss += y * log(p, 10) + (1 - y) * log(1 - p, 10)
 
     return -loss
 
 
-def computeOneLossDerivate(result: tuple[float],
-                           NNresult: list[float]) -> float:
+def computeOneLossDerivate(y: float,
+                           p: float) -> float:
     """
     Function to compute the derivate loss of the network by cross entropy.
-    @param  results     The list of wanted results.
-    @param  NNresults   The list of neural networks results.
+    @param  y   The wanted results.
+    @param  p   The neural network result.
     @return The derivate loss.
     """
     loss = 0.0
-    outputSize = len(result)
     ln10 = ln(10)
 
     # Compare network output with wanted one
-    for i in range(outputSize):
-        y = result[i]
-        p = NNresult[i]
-        try:
-            loss += y / (ln10 * p) + (y - 1) / (ln10 * (1 - p))
-        except: pass
+    try:
+        loss += y / (ln10 * p) + (y - 1) / (ln10 * (1 - p))
+    except:
+        pass
 
     return -loss

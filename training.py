@@ -6,7 +6,7 @@
 #    By: gugus <gugus@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/21 15:08:58 by gugus             #+#    #+#              #
-#    Updated: 2025/02/27 12:57:09 by gugus            ###   ########.fr        #
+#    Updated: 2025/02/27 13:52:19 by gugus            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -35,10 +35,9 @@ neuralNetwork = NeuralNetwork(LAYERS)
 
 
 # Compute wanted output for data
-tmp = [(1, 0), (0, 1)]
 dataResults = []
 for _, result, _ in datas:
-    dataResults.append(tmp[result])
+    dataResults.append(result)
 minimumLoss = computeLoss(dataResults, dataResults)
 print(f"minimum loss {minimumLoss}")
 
@@ -66,17 +65,13 @@ for nbLoop in range(LEARNING_LOOP):
     for i in range(nbData):
         inputs = datas[i][0]
         # Compute NN result
-        NNresult = neuralNetwork.forward(inputs)
+        NNresult = neuralNetwork.forward(inputs)[0]
         # Save result for loss computation
         NNresults.append(NNresult)
 
         # Update error number
-        if datas[i][1] == 0:
-            if NNresult[0] <= NNresult[1]:
-                nbError += 1
-        else:
-            if NNresult[0] >= NNresult[1]:
-                nbError += 1
+        if int(NNresult + 0.5) != dataResults[i]:
+            nbError += 1
 
         # Compute derivate loss
         dLoss = computeOneLossDerivate(dataResults[i], NNresult)
@@ -117,7 +112,7 @@ for nbLoop in range(LEARNING_LOOP):
 
     # Compute loss
     loss = computeLoss(dataResults, NNresults)
-    print(f"loop {nbLoop + 1:3} : loss {loss:.5f}, errors {nbError:3}/{nbData:3}")
+    print(f"loop {nbLoop + 1:3} : loss {loss:13.10f}, errors {nbError:3}/{nbData:3}")
 
     if abs(lastLoss - loss) <= LOSS_PRECISION:
         lastLossRepeat += 1

@@ -6,7 +6,7 @@
 #    By: gugus <gugus@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/21 15:08:58 by gugus             #+#    #+#              #
-#    Updated: 2025/02/25 14:35:43 by gugus            ###   ########.fr        #
+#    Updated: 2025/02/27 13:48:53 by gugus            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -48,9 +48,9 @@ nbData = len(datas)
 nbError = 0
 
 for inputs, result, _ in datas:
-    NNresult = neuralNetwork.forward(inputs)
+    NNresult = neuralNetwork.forward(inputs)[0]
 
-    if (NNresult[0] <= NNresult[1]) != result:
+    if int(NNresult + 0.5) != result:
         nbError += 1
 
 

@@ -6,13 +6,14 @@
 #    By: gugus <gugus@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/20 15:14:17 by aderouba          #+#    #+#              #
-#    Updated: 2025/02/26 14:32:38 by gugus            ###   ########.fr        #
+#    Updated: 2025/02/27 12:32:29 by gugus            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 from parsing.print import printError
 
 import random
+
 
 def dot(vec1: list[float], vec2: list[float], size: int) -> float:
     """
@@ -43,19 +44,19 @@ class Layer:
         @return The Layer's object.
         """
         # Weight matrix initialization
-        self.weights = [[0.0] * inputSize] * nbNeurons
-        # self.weights = []
-        # for _ in range(nbNeurons):
-        #     lst = []
-        #     for __ in range(inputSize):
-        #         lst.append(random.random())
-        #     self.weights.append(lst)
+        # self.weights = [[0.0] * inputSize] * nbNeurons
+        self.weights = []
+        for _ in range(nbNeurons):
+            lst = []
+            for __ in range(inputSize):
+                lst.append(random.random())
+            self.weights.append(lst)
 
         # Bias vector initialization
-        self.biases = [0.0] * nbNeurons
-        # self.biases = []
-        # for _ in range(nbNeurons):
-        #     self.biases.append(random.random())
+        # self.biases = [0.0] * nbNeurons
+        self.biases = []
+        for _ in range(nbNeurons):
+            self.biases.append(random.random())
 
         self.nbNeurons = nbNeurons
         self.inputSize = inputSize

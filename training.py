@@ -6,12 +6,13 @@
 #    By: gugus <gugus@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/21 15:08:58 by gugus             #+#    #+#              #
-#    Updated: 2025/02/26 18:36:58 by gugus            ###   ########.fr        #
+#    Updated: 2025/02/27 12:57:09 by gugus            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 from define import                  TRAINING_DATA_FILE, PARAMS_FILE, LAYERS,\
-                                    INPUT_SIZE, LEARNING_LOOP, LEARNING_RATE
+                                    INPUT_SIZE, LEARNING_LOOP, LEARNING_RATE,\
+                                    LOSS_MAX_REPEAT, LOSS_PRECISION
 from parsing.file import            readFile, writeInFile
 from parsing.parse import           parseData
 from parsing.string import          vectorToStr, matrixToStr
@@ -55,6 +56,8 @@ for inputs, _, _ in datas:
 # Gradient descent
 nbData = len(datas)
 invNbData = 1.0 / nbData
+lastLoss = 0.0
+lastLossRepeat = 0
 for nbLoop in range(LEARNING_LOOP):
     lst_gradients = []
     NNresults = []
@@ -114,7 +117,15 @@ for nbLoop in range(LEARNING_LOOP):
 
     # Compute loss
     loss = computeLoss(dataResults, NNresults)
-    print(f"loop {nbLoop + 1:3} : loss {loss:.3f}, errors {nbError:3}/{nbData:3}")
+    print(f"loop {nbLoop + 1:3} : loss {loss:.5f}, errors {nbError:3}/{nbData:3}")
+
+    if abs(lastLoss - loss) <= LOSS_PRECISION:
+        lastLossRepeat += 1
+        if lastLossRepeat == LOSS_MAX_REPEAT:
+            break
+    else:
+        lastLossRepeat = 0
+    lastLoss = loss
 
 
 # TODO: Unnormalize weights and biases

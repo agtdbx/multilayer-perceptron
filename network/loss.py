@@ -6,7 +6,7 @@
 #    By: gugus <gugus@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/24 15:41:15 by gugus             #+#    #+#              #
-#    Updated: 2025/02/26 18:48:53 by gugus            ###   ########.fr        #
+#    Updated: 2025/02/27 12:33:57 by gugus            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -96,6 +96,8 @@ def computeOneLossDerivate(result: tuple[float],
     for i in range(outputSize):
         y = result[i]
         p = NNresult[i]
-        loss += y / (ln10 * p) + (y - 1) / (ln10 * (1 - p))
+        try:
+            loss += y / (ln10 * p) + (y - 1) / (ln10 * (1 - p))
+        except: pass
 
     return -loss

@@ -6,7 +6,7 @@
 #    By: gugus <gugus@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/20 15:14:28 by aderouba          #+#    #+#              #
-#    Updated: 2025/02/27 12:35:23 by gugus            ###   ########.fr        #
+#    Updated: 2025/02/27 15:04:08 by gugus            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -31,7 +31,7 @@ def sigmoidDerivate(x: float) -> float:
     @return Real number between 0 and 1.
     """
     try:
-        tmp = exp(x)
+        tmp = exp(-x)
         return tmp / ((tmp + 1) ** 2)
     except:
         return 0

@@ -6,7 +6,7 @@
 #    By: gugus <gugus@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/21 15:08:58 by gugus             #+#    #+#              #
-#    Updated: 2025/02/28 16:35:29 by gugus            ###   ########.fr        #
+#    Updated: 2025/02/28 21:40:13 by gugus            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -35,10 +35,6 @@ if datas == None:
 nbData = len(datas)
 
 
-# Create neural network
-neuralNetwork = NeuralNetwork(HIDDEN_LAYERS)
-
-
 # Put data into good format for training
 lst_inputs = []
 lst_result = []
@@ -46,26 +42,60 @@ for inputs, result, _ in datas:
     lst_inputs.append(inputs)
     lst_result.append([result])
 
-X_train = Matrix((INPUT_SIZE, nbData), lst_inputs).transpose()
-Y_train = Matrix((1, nbData), lst_result).transpose()
+X_train = Matrix((INPUT_SIZE, nbData), lst_inputs)
+Y_train = Matrix((1, nbData), lst_result)
 
-minimumLoss = logLoss(Y_train, Y_train)
-print(f"minimum loss {minimumLoss}")
+# minimumLoss = logLoss(Y_train, Y_train)
+# print(f"minimum loss {minimumLoss}")
+
+
+# Create neural network
+dimensions = list(HIDDEN_LAYERS)
+dimensions.insert(0, X_train.width)
+dimensions.append(Y_train.width)
+
+neuralNetwork = NeuralNetwork(dimensions)
 
 
 # Normalize data
 maxes = []
-for y in range(INPUT_SIZE):
-    inputMax = max(X_train.data[y])
-    for x in range(nbData):
+for x in range(INPUT_SIZE):
+    inputMax = 0
+    for y in range(nbData):
+        inputMax = max(X_train[x, y], inputMax)
+    for y in range(nbData):
         X_train[x, y] /= inputMax
     maxes.append(inputMax)
 
 
 # Gradient descent
+trainLosses = []
+trainAccuracy = []
 for nbLoop in tqdm(range(LEARNING_LOOP)):
-    activations = neuralNetwork.forwardPropagation(X_train)
-    print(activations)
+    results = neuralNetwork.forwardPropagation(X_train)
+    gradients = neuralNetwork.backwardProgatation(Y_train)
+    neuralNetwork.applyGradients(gradients)
+
+    if nbLoop % 10 == 0:
+        trainLosses.append(logLoss(Y_train, results))
+        errors = 0
+        for y in range(nbData):
+            if Y_train[0, y] != (results[0, y] >= 0.5):
+                errors += 1
+        trainAccuracy.append((1 - (errors / nbData)) * 100)
+
+
+# Plots of training
+import matplotlib.pyplot as plt
+fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(12, 4))
+
+ax[0].plot(trainLosses, label="train loss")
+ax[0].legend()
+
+ax[1].plot(trainAccuracy, label="train accuracy")
+ax[1].legend()
+
+plt.show()
 
 
 # # TODO: Unnormalize weights and biases

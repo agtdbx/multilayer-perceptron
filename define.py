@@ -6,7 +6,7 @@
 #    By: gugus <gugus@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/20 18:02:30 by aderouba          #+#    #+#              #
-#    Updated: 2025/02/28 16:34:14 by gugus            ###   ########.fr        #
+#    Updated: 2025/02/28 21:41:06 by gugus            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,10 +24,10 @@ EPSILON = 1e-15
 # Neural network defines
 INPUT_SIZE = NUMBER_OF_COLUMN - 2
 OUTPUT_SIZE = 1
-HIDDEN_LAYERS = [8, 8]
+HIDDEN_LAYERS = [32, 32, 32]
 
 # Learning define
-LEARNING_LOOP = 1
+LEARNING_LOOP = 1000
 LEARNING_RATE = 0.1
 LOSS_MAX_REPEAT = 20
 LOSS_PRECISION = 0.00000000001

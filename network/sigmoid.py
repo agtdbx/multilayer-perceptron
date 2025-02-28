@@ -6,32 +6,26 @@
 #    By: gugus <gugus@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/20 15:14:28 by aderouba          #+#    #+#              #
-#    Updated: 2025/02/27 15:04:08 by gugus            ###   ########.fr        #
+#    Updated: 2025/02/28 15:51:35 by gugus            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
+from network.matrix import  Matrix
+
 from math import exp
 
-def sigmoid(x: float) -> float:
-    """
-    Function to put any real number between 0 and 1.
-    @param  x   Real number in input.
-    @return Real number between 0 and 1.
-    """
-    try:
-        return 1 / (1 + exp(-x))
-    except:
-        return 0
 
+def sigmoid(z: Matrix) -> Matrix:
+    """
+    Activation function sigmoid for weighted sum.
+    @param  z   weighted sum matrix.
+    @return Activation matrix.
+    """
+    a = Matrix((z.width, z.height))
+    for y in z.height:
+        try:
+            a[1, y] = 1 / (1 + exp(z[1, y]))
+        except:
+            a[1, y] = 0
 
-def sigmoidDerivate(x: float) -> float:
-    """
-    Derivation of the function to put any real number between 0 and 1.
-    @param  x   Real number in input.
-    @return Real number between 0 and 1.
-    """
-    try:
-        tmp = exp(-x)
-        return tmp / ((tmp + 1) ** 2)
-    except:
-        return 0
+    return a

@@ -6,52 +6,60 @@
 #    By: gugus <gugus@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/20 15:14:35 by aderouba          #+#    #+#              #
-#    Updated: 2025/02/27 13:14:44 by gugus            ###   ########.fr        #
+#    Updated: 2025/02/28 16:48:04 by gugus            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-from network.layer import   Layer
-from network.sigmoid import sigmoid, sigmoidDerivate
+from define import          INPUT_SIZE, OUTPUT_SIZE, LEARNING_RATE
+
+from network.matrix import  Matrix
+from network.sigmoid import sigmoid
 
 class NeuralNetwork:
     """
     The class for the neural network.
     """
 
-    def __init__(self, layersSize: list[int]) -> 'NeuralNetwork':
+    def __init__(self, hidderLayers: list[int]) -> 'NeuralNetwork':
         """
         The constructor of NeuralNetwork class.
-        @param  layersSize  The number of neurons per layer.
+        @param  hidderLayers    The number of neurons per hidden layers.
         """
-        self.nbLayers = len(layersSize)
-        if self.nbLayers < 2:
-            raise ValueError("You need to have at least 2 layers for a neural network")
+        # Create network dimensions
+        dimensions = hidderLayers.copy()
+        dimensions.insert(0, INPUT_SIZE)
+        dimensions.append(OUTPUT_SIZE)
 
-        self.nbNeurons = 0
-        # Layers creation
-        self.layers: list[Layer] = []
-        inputSize = layersSize[0]
-        for layerSize in layersSize:
-            self.layers.append(Layer(inputSize, layerSize))
-            inputSize = layerSize
-            self.nbNeurons += layerSize
+        self.nbLayers = len(dimensions)
+        dimensions.append(INPUT_SIZE) # for l = 0, input is l - 1
 
-        self.inputSize = layersSize[0]
-        self.outputSize = layersSize[-1]
+        # Init weights and biases per layer
+        self.weigths: list[Matrix] = []
+        self.biases: list[Matrix] = []
+        self.activations: list[Matrix] = []
+
+        for l in range(0, self.nbLayers):
+            print(f"input {dimensions[l - 1]}, neurons {dimensions[l]}")
+
+            weigths = Matrix((dimensions[l - 1], dimensions[l]))
+            weigths.fillRandom()
+            self.weigths.append(weigths)
+
+            biases = Matrix((dimensions[l], 1))
+            biases.fillRandom()
+            self.biases.append(biases)
 
 
-    def loadParameters(self, params: list[tuple[list[list[float]], list[float]]]) -> bool:
+    def loadParameters(self,
+                       params: list[tuple[list[list[float]],list[float]]]):
         """
         Method to load weights and biases into the network.
         @param  params  The list of tupple (weigth matrix, bias vector).
-        @return False in case or error, True else.
         """
         # Give parameters to each layer
-        for i in range(self.nbLayers):
-            if not self.layers[i].loadParameters(params[i][0], params[i][1]):
-                return False
-
-        return True
+        for l in range(self.nbLayers):
+            self.weigths[l].mapData(params[l][0])
+            self.biases[l].mapData(params[l][1])
 
 
     def getParameters(self) -> list[tuple[list[list[float]], list[float]]]:
@@ -61,83 +69,86 @@ class NeuralNetwork:
         """
         result = []
 
-        for layer in self.layers:
-            result.append(layer.getParameters())
+        for l in range(self.nbLayers):
+            result.append((self.weigths[l].data.copy(),
+                           self.biases[l].data.copy()))
 
         return result
 
 
-    def forward(self, inputs: list[float], activationFunction=sigmoid) -> list[float]:
+    def predict(self, X: Matrix) -> Matrix:
+        """
+        Method to predict a result by given input.
+        @param  X   Input to predict.
+        @return A matrix of predicted result.
+        """
+        a = self.forwardPropagation(X)
+        for x in range(a.width):
+            if a[x, 0] >= 0.5:
+                a[x, 0] = 1
+            else:
+                a[x, 0] = 0
+
+        return a
+
+
+    def forwardPropagation(self,
+                           X: Matrix) -> Matrix:
         """
         Method to process inputs through the neural network.
-        @param  inputs  The input vector.
-        @param  activationFunction  The activation function, by default sigmoid.
+        @param  X       The input matrix.
         @return The network result.
         """
-        # Give inputs to first layer, and layer result to the next layer.
-        for layer in self.layers:
-            inputs = layer.forward(inputs, activationFunction)
+        self.activations: list[Matrix] = [X.copy()]
 
-        return inputs
+        for l in range(self.nbLayers):
+            print(f"Layer {l}")
+            print(f" W  {self.weigths[l].size()}")
+            print(f" A  {self.activations[l].size()}")
+            tkt = self.weigths[l] * self.activations[l]
+            print(f" WA {tkt.size()}")
+            print(f" B  {self.biases[l].size()}")
+            z = tkt + self.biases[l]
+            self.activations.append(sigmoid(-z))
+
+        return self.activations[-1]
 
 
-    def backprogatation(self,
-                        dLoss: float,
-                        derivateFunction=sigmoidDerivate
-                        )-> list[tuple[list[list[float]], list[float]]]:
+    def backwardProgatation(self, y: Matrix)-> list[tuple[Matrix, Matrix]]:
         """
-        Method to compute the gradient by back propagation.
-        @param  dLoss               The derivation of the loss by the neural network result.
-        @param  derivateFunction    The derivation of the activation function for forward.
-        @return The list of tuple of gradient like [(weigths gradient, biases gradient), ...].
+        Method to compute the gradient by backward propagation.
+        Return format : [(weigths gradient, biases gradient), ...].
+        @param  y   The result wanted.
+        @return The list of tuple of gradient.
         """
-        gradients = [None] * self.nbLayers
-        l = self.nbLayers - 1
-        dLosses = [dLoss] * self.layers[l].nbNeurons
+        m = y.height
 
-        while l >= 0:
-            layer = self.layers[l]
-            newDLosses = [0.0] * layer.inputSize
-            gradientWeights = []
-            gradientBiases = []
+        dZ = self.activations[-1] - y
+        gradients: list[tuple[Matrix, Matrix]] = [None] * self.nbLayers
 
-            # For each neurons
-            for n in range(layer.nbNeurons):
-                # Derivate of result by weighted sum
-                dA = derivateFunction(layer.hiddenResults[n])
+        for l in range(self.nbLayers - 1, -1, -1):
+            dW = 1 / m * dZ * self.activations[l].transpose()
 
-                lst_dW = []
-                for i in range(layer.inputSize):
-                    # Derivate of weighted sum by weight
-                    dZ = layer.inputs[i]
+            sumDZ = 0
+            for i in range(dZ.height):
+                sumDZ += dZ[0, i]
+            db = 1 / m * sumDZ
 
-                    # Derivate of loss by weight
-                    dW = dZ * dA * dLosses[n]
-                    lst_dW.append(dW)
+            gradients[l] = (dW, db)
 
-                    # Derivate of loss by input
-                    dI = layer.weights[n][i] * dA * dLosses[n]
-                    newDLosses[i] += dI
-                gradientWeights.append(lst_dW)
-
-                # Derivate of loss by bias
-                dB = dA * dLosses[n]
-                gradientBiases.append(dB)
-
-            # Update dLosses
-            dLosses = newDLosses
-
-            gradients[l] = (gradientWeights, gradientBiases)
-
-            l -= 1
-
-        return gradients
+            if l > 0:
+                dZ = self.weigths[l].transpose() * self.activations[l]\
+                        * -self.activations[l]
 
 
-    def applyGradient(self, gradients: list[tuple[list[list[float]], list[float]]]):
+    def applyGradients(self, gradients: list[tuple[Matrix, Matrix]]):
         """
         Method to apply the gradient to weigths and biases to each layer.
         @param  gradients   The gradients to apply to weigths and biases.
         """
+
         for l in range(self.nbLayers):
-            self.layers[l].applyGradient(gradients[l][0], gradients[l][1])
+            dW, db = gradients[l]
+
+            self.weigths[l] = self.weigths[l] - dW * LEARNING_RATE
+            self.biases[l] = self.biases[l] - db * LEARNING_RATE

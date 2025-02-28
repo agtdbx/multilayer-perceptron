@@ -6,22 +6,28 @@
 #    By: gugus <gugus@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/20 18:02:30 by aderouba          #+#    #+#              #
-#    Updated: 2025/02/27 13:54:35 by gugus            ###   ########.fr        #
+#    Updated: 2025/02/28 16:34:14 by gugus            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 # Input define
 NUMBER_OF_COLUMN = 32
-INPUT_SIZE = NUMBER_OF_COLUMN - 2
 
 # Files defines
 TRAINING_DATA_FILE = "trainingData.csv"
 VALIDATION_DATA_FILE = "validationData.csv"
 PARAMS_FILE = ".NNparams"
 
+# Math define
+EPSILON = 1e-15
+
 # Neural network defines
-LAYERS = [INPUT_SIZE, 8, 8, 1]
-LEARNING_LOOP = 1000
+INPUT_SIZE = NUMBER_OF_COLUMN - 2
+OUTPUT_SIZE = 1
+HIDDEN_LAYERS = [8, 8]
+
+# Learning define
+LEARNING_LOOP = 1
 LEARNING_RATE = 0.1
 LOSS_MAX_REPEAT = 20
 LOSS_PRECISION = 0.00000000001

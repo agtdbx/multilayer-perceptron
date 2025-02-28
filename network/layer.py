@@ -6,29 +6,13 @@
 #    By: gugus <gugus@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/20 15:14:17 by aderouba          #+#    #+#              #
-#    Updated: 2025/02/27 12:32:29 by gugus            ###   ########.fr        #
+#    Updated: 2025/02/28 13:22:45 by gugus            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 from parsing.print import printError
 
 import random
-
-
-def dot(vec1: list[float], vec2: list[float], size: int) -> float:
-    """
-    Function to make a dot product between two vetors.
-    @param  vec1    The first vector.
-    @param  vec2    The second vector.
-    @param  size    The size of vectors.
-    @return The result of the dot product.
-    """
-    result = 0
-
-    for i in range(size):
-        result += vec1[i] + vec2[i]
-
-    return result
 
 
 class Layer:
@@ -43,28 +27,11 @@ class Layer:
         @param  nbNeurons   The number of neurons in the layer.
         @return The Layer's object.
         """
-        # Weight matrix initialization
-        # self.weights = [[0.0] * inputSize] * nbNeurons
-        self.weights = []
-        for _ in range(nbNeurons):
-            lst = []
-            for __ in range(inputSize):
-                lst.append(random.random())
-            self.weights.append(lst)
-
-        # Bias vector initialization
-        # self.biases = [0.0] * nbNeurons
-        self.biases = []
-        for _ in range(nbNeurons):
-            self.biases.append(random.random())
-
-        self.nbNeurons = nbNeurons
-        self.inputSize = inputSize
-        self.hiddenResults = [0.0] * nbNeurons
-        self.results = [0.0] * nbNeurons
 
 
-    def loadParameters(self, weights: list[list[float]], biases: list[float]) -> bool:
+    def loadParameters(self,
+                       weights: list[list[float]],
+                       biases: list[float]) -> bool:
         """
         Method to load weights and biases into the layer.
         Print it's error.
@@ -98,32 +65,22 @@ class Layer:
         return (self.weights, self.biases)
 
 
-    def forward(self, inputs: list[float], activationFunction) -> list[float]:
+    def forwardPropagation(self,
+                           inputs: list[float],
+                           sigma) -> list[float]:
         """
         A method to compute the inputs throw the layer.
-        @param  inputs              The inputs to process.
-        @param  activationFunction  The activation function, such as sigmoid or ReLU.
+        @param  inputs  The inputs to process.
+        @param  sigma   The activation function, such as sigmoid or ReLU.
         @return The result of computation.
         """
-        self.inputs = inputs
-        self.hiddenResults = [0.0] * self.nbNeurons
-        self.results = [0.0] * self.nbNeurons
-
-        # For each neurons, apply weigths, bias and compute sigmoid
-        for i in range(self.nbNeurons):
-            self.hiddenResults[i] = dot(self.weights[i], inputs, self.inputSize) + self.biases[i]
-            self.results[i] = activationFunction(self.hiddenResults[i])
-
-        return self.results
 
 
-    def applyGradient(self, gradientWeights: list[list[float]], gradientBiases: list[float]):
+    def applyGradient(self,
+                      gradientWeights: list[list[float]],
+                      gradientBiases: list[float]):
         """
         Method to apply the gradient to weigths and biases.
         @param  gradientWeights The gradient to apply to weigths.
         @param  gradientBiases  The gradient to apply to biases.
         """
-        for i in range(self.nbNeurons):
-            for w in range(self.inputSize):
-                self.weights[i][w] -= gradientWeights[i][w]
-            self.biases[i] -= gradientBiases[i]

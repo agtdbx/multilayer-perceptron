@@ -6,21 +6,20 @@
 #    By: gugus <gugus@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/21 15:08:58 by gugus             #+#    #+#              #
-#    Updated: 2025/02/28 21:40:13 by gugus            ###   ########.fr        #
+#    Updated: 2025/03/03 15:44:02 by gugus            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 from define import                  TRAINING_DATA_FILE, PARAMS_FILE,\
                                     HIDDEN_LAYERS, INPUT_SIZE,\
-                                    LEARNING_LOOP,\
-                                    LOSS_MAX_REPEAT, LOSS_PRECISION
+                                    LEARNING_LOOP
 from parsing.file import            readFile, writeInFile
 from parsing.parse import           parseData
 from parsing.string import          vectorToStr, matrixToStr
 from network.loss import            logLoss
-from network.matrix import          Matrix
 from network.neuralNetwork import   NeuralNetwork
 
+import numpy as np
 from tqdm import tqdm
 
 # Get data
@@ -42,8 +41,8 @@ for inputs, result, _ in datas:
     lst_inputs.append(inputs)
     lst_result.append([result])
 
-X_train = Matrix((INPUT_SIZE, nbData), lst_inputs)
-Y_train = Matrix((1, nbData), lst_result)
+X_train = np.array(lst_inputs).T
+Y_train = np.array(lst_result).T
 
 # minimumLoss = logLoss(Y_train, Y_train)
 # print(f"minimum loss {minimumLoss}")
@@ -51,13 +50,12 @@ Y_train = Matrix((1, nbData), lst_result)
 
 # Create neural network
 dimensions = list(HIDDEN_LAYERS)
-dimensions.insert(0, X_train.width)
-dimensions.append(Y_train.width)
+dimensions.insert(0, X_train.shape[0])
+dimensions.append(Y_train.shape[0])
 
 neuralNetwork = NeuralNetwork(dimensions)
 
 
-# Normalize data
 maxes = []
 for x in range(INPUT_SIZE):
     inputMax = 0

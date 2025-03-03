@@ -6,13 +6,14 @@
 #    By: gugus <gugus@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/24 15:41:15 by gugus             #+#    #+#              #
-#    Updated: 2025/02/28 21:28:49 by gugus            ###   ########.fr        #
+#    Updated: 2025/03/03 15:19:27 by gugus            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-from define import          EPSILON
-from network.matrix import  Matrix
+from define import  EPSILON
 
+import numpy as np
+from numpy import ndarray as Matrix
 from math import log
 
 
@@ -23,10 +24,5 @@ def logLoss(A: Matrix, Y: Matrix) -> float:
     @param  Y   Wanted output.
     @return The cost of the output.
     """
-    lossSum = 0
-    for i in range(Y.height):
-        a = A[0, i]
-        y = Y[0, i]
-        lossSum += -y * log(a + EPSILON) - (1 - y) * log(1 - a + EPSILON)
-
-    return 1 / Y.height * lossSum
+    return 1 / len(Y) * np.sum(-Y * np.log(A + EPSILON)\
+                               - (1 - Y) / np.log(1 - A + EPSILON))

@@ -6,14 +6,14 @@
 #    By: gugus <gugus@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/20 15:14:35 by aderouba          #+#    #+#              #
-#    Updated: 2025/02/28 21:32:41 by gugus            ###   ########.fr        #
+#    Updated: 2025/03/03 15:39:05 by gugus            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-from define import          LEARNING_RATE
+from define import  LEARNING_RATE
 
-from network.matrix import  Matrix
-from network.sigmoid import sigmoid
+import numpy as np
+from numpy import ndarray as Matrix
 
 class NeuralNetwork:
     """
@@ -29,12 +29,8 @@ class NeuralNetwork:
         self.parameters: dict[str, Matrix] = {}
 
         for l in range(1, len(dimensions)):
-            W = Matrix((dimensions[l], dimensions[l - 1]))
-            b = Matrix((dimensions[l], 1))
-
-            W.fillRandom()
-            b.fillRandom()
-
+            W = np.random.randn(dimensions[l], dimensions[l - 1])
+            b = np.random.randn(dimensions[l], 1)
             self.parameters[f"W{l}"] = W
             self.parameters[f"b{l}"] = b
 
@@ -79,8 +75,8 @@ class NeuralNetwork:
             W = self.parameters[f"W{l}"]
             A = self.activations[f"A{l - 1}"]
             b = self.parameters[f"b{l}"]
-            Z = A * W + b
-            self.activations[f"A{l}"] = sigmoid(-Z)
+            Z = W.dot(A) + b
+            self.activations[f"A{l}"] = 1 / (1 + np.exp(-Z))
 
         return self.activations[f"A{self.nbLayers}"]
 
@@ -92,25 +88,18 @@ class NeuralNetwork:
         @param  y   The result wanted.
         @return The list of tuple of gradient.
         """
-        m = y.height
+        m = y.shape[1]
 
         dZ = self.activations[f"A{self.nbLayers}"] - y
         gradients: dict[str, Matrix] = {}
 
         for l in range(self.nbLayers, 0, -1):
             A = self.activations[f"A{l - 1}"]
-            dW = 1 / m * (A.transpose() * dZ)
-            gradients[f"dW{l}"] = dW
-
-            sumDZ = 0
-            for i in range(dZ.height):
-                sumDZ += dZ[0, i]
-            db = 1 / m * sumDZ
-            gradients[f"db{l}"] = db
-
+            gradients[f"dW{l}"] = 1 / m * np.dot(dZ, A.T)
+            gradients[f"db{l}"] = 1 / m * np.sum(dZ, axis=1, keepdims=True)
             if l > 1:
-                WT = self.parameters[f"W{l}"].transpose()
-                dZ = dZ * WT * A * (1 - A)
+                WT = self.parameters[f"W{l}"].T
+                dZ = np.dot(WT, dZ) * A * (1 - A)
 
         return gradients
 
@@ -125,8 +114,8 @@ class NeuralNetwork:
             b = self.parameters[f"b{l}"]
             dW = gradients[f"dW{l}"]
             db = gradients[f"db{l}"]
-            self.parameters[f"W{l}"] = W - dW * LEARNING_RATE
-            self.parameters[f"b{l}"] = b - db * LEARNING_RATE
+            self.parameters[f"W{l}"] = W - LEARNING_RATE * dW
+            self.parameters[f"b{l}"] = b - LEARNING_RATE * db
 
 
     def predict(self, X: Matrix) -> Matrix:
@@ -135,11 +124,6 @@ class NeuralNetwork:
         @param  X   Input to predict.
         @return A matrix of predicted result.
         """
-        a = self.forwardPropagation(X)
-        for x in range(a.width):
-            if a[x, 0] >= 0.5:
-                a[x, 0] = 1
-            else:
-                a[x, 0] = 0
+        A = self.forwardPropagation(X)
 
-        return a
+        return A >= 0.5

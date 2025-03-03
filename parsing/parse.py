@@ -6,7 +6,7 @@
 #    By: gugus <gugus@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/13 17:27:15 by aderouba          #+#    #+#              #
-#    Updated: 2025/02/24 20:52:31 by gugus            ###   ########.fr        #
+#    Updated: 2025/03/03 16:18:16 by gugus            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -50,13 +50,13 @@ def parseData(fileContent: str) -> list[tuple[list[float], int, int]]:
     return data
 
 
-def parseNNparams(fileContent: str) -> list[tuple[list[list[float]], list[float]]]:
+def parseNNparams(fileContent: str) -> tuple[list[float], list[tuple[list[list[float]], list[float]]]]:
     """
     Function for parse the network params file content and return a list tuples
     like [(weigth matrix, bias vector),...].
     Print it's error.
     @param  fileContent The file content to parse
-    @return The file parsed, or None in case of error.
+    @return The file parsed as a tupple, or None in case of error.
     """
     # Split file by line
     lines = fileContent.split("\n")
@@ -66,9 +66,16 @@ def parseNNparams(fileContent: str) -> list[tuple[list[list[float]], list[float]
         printError("file is empty")
         return None
 
+    # Parse first line
+    line = lines.pop(0)
+    maxes = strToVector(line)
+    if maxes == None:
+        printError(f"[l{1};c1] - bad maxes format")
+        return None
+
     # Parse all other lines
     result = []
-    lineNumber = 1
+    lineNumber = 2
     for line in lines:
         # If a line is empty, skip it
         if line == "":
@@ -81,7 +88,7 @@ def parseNNparams(fileContent: str) -> list[tuple[list[list[float]], list[float]
         result.append(dataLine)
         lineNumber += 1
 
-    return result
+    return maxes, result
 
 
 def _parseLineData(line: str, lineNumber: int) -> tuple[list[float], int, int]:

@@ -6,7 +6,7 @@
 #    By: gugus <gugus@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/20 15:14:35 by aderouba          #+#    #+#              #
-#    Updated: 2025/03/03 15:39:05 by gugus            ###   ########.fr        #
+#    Updated: 2025/03/03 16:25:03 by gugus            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -37,30 +37,59 @@ class NeuralNetwork:
         self.nbLayers = len(self.parameters) // 2
 
 
-    # def loadParameters(self,
-    #                    params: list[tuple[list[list[float]],list[float]]]):
-    #     """
-    #     Method to load weights and biases into the network.
-    #     @param  params  The list of tupple (weigth matrix, bias vector).
-    #     """
-    #     # Give parameters to each layer
-    #     for l in range(self.nbLayers):
-    #         self.weigths[l].mapData(params[l][0])
-    #         self.biases[l].mapData(params[l][1])
+    def loadParameters(self,
+                       params: list[tuple[list[list[float]],list[float]]]):
+        """
+        Method to load weights and biases into the network.
+        @param  params  The list of tupple (weigth matrix, bias vector).
+        """
+        # Give parameters to each layer
+        for l in range(1, self.nbLayers + 1):
+            W = self.parameters[f"W{l}"]
+            weights = params[l - 1][0]
+
+            if W.shape[1] != len(weights):
+                raise ValueError(f"Bad weights height for layer {l}")
+
+            for y in range(W.shape[1]):
+                if W.shape[0] != len(weights[y]):
+                    raise ValueError(f"Bad weights width size for layer {l}")
+                for x in range(W.shape[0]):
+                    W[x, y] = weights[y][x]
+
+            b = self.parameters[f"b{l}"]
+            biases = params[l - 1][1]
+            if b.shape[0] != len(biases):
+                raise ValueError(f"Bad biases size for layer {l}")
+
+            for x in range(b.shape[0]):
+                b[x, 0] = biases[x]
 
 
-    # def getParameters(self) -> list[tuple[list[list[float]], list[float]]]:
-    #     """
-    #     Method to get the network's parameters.
-    #     @return A list as [(weight matrix, bias vector), ..].
-    #     """
-    #     result = []
+    def getParameters(self) -> list[tuple[list[list[float]], list[float]]]:
+        """
+        Method to get the network's parameters.
+        @return A list as [(weight matrix, bias vector), ..].
+        """
+        result = []
 
-    #     for l in range(self.nbLayers):
-    #         result.append((self.weigths[l].data.copy(),
-    #                        self.biases[l].data.copy()))
+        for l in range(1, self.nbLayers + 1):
+            W = self.parameters[f"W{l}"]
+            weights = []
+            for y in range(W.shape[1]):
+                lst = []
+                for x in range(W.shape[0]):
+                    lst.append(W[x, y])
+                weights.append(lst)
 
-    #     return result
+            b = self.parameters[f"b{l}"]
+            biases = []
+            for x in range(b.shape[0]):
+                biases.append(b[x, 0])
+
+            result.append((weights, biases))
+
+        return result
 
     def forwardPropagation(self,
                            X: Matrix) -> Matrix:
@@ -88,15 +117,15 @@ class NeuralNetwork:
         @param  y   The result wanted.
         @return The list of tuple of gradient.
         """
-        m = y.shape[1]
+        invM = 1 / y.shape[1]
 
         dZ = self.activations[f"A{self.nbLayers}"] - y
         gradients: dict[str, Matrix] = {}
 
         for l in range(self.nbLayers, 0, -1):
             A = self.activations[f"A{l - 1}"]
-            gradients[f"dW{l}"] = 1 / m * np.dot(dZ, A.T)
-            gradients[f"db{l}"] = 1 / m * np.sum(dZ, axis=1, keepdims=True)
+            gradients[f"dW{l}"] = invM * np.dot(dZ, A.T)
+            gradients[f"db{l}"] = invM * np.sum(dZ, axis=1, keepdims=True)
             if l > 1:
                 WT = self.parameters[f"W{l}"].T
                 dZ = np.dot(WT, dZ) * A * (1 - A)
@@ -124,6 +153,4 @@ class NeuralNetwork:
         @param  X   Input to predict.
         @return A matrix of predicted result.
         """
-        A = self.forwardPropagation(X)
-
-        return A >= 0.5
+        return self.forwardPropagation(X) >= 0.5

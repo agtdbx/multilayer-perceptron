@@ -6,11 +6,11 @@
 #    By: gugus <gugus@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/20 15:14:35 by aderouba          #+#    #+#              #
-#    Updated: 2025/03/04 13:14:14 by gugus            ###   ########.fr        #
+#    Updated: 2025/03/04 15:48:07 by gugus            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-from define import  LEARNING_RATE
+from define import  LEARNING_RATE, SEED
 
 import numpy as np
 from numpy import ndarray as Matrix
@@ -27,6 +27,10 @@ class NeuralNetwork:
         """
         # Init weights and biases per layer
         self.parameters: dict[str, Matrix] = {}
+
+        # If the seed isn't None, use it for as random seed
+        if SEED != None:
+            np.random.seed(SEED)
 
         for l in range(1, len(dimensions)):
             W = np.random.randn(dimensions[l], dimensions[l - 1])

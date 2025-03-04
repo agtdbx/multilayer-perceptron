@@ -6,7 +6,7 @@
 #    By: gugus <gugus@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/20 18:02:30 by aderouba          #+#    #+#              #
-#    Updated: 2025/03/03 16:39:01 by gugus            ###   ########.fr        #
+#    Updated: 2025/03/04 15:48:19 by gugus            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -25,6 +25,7 @@ EPSILON = 1e-15
 INPUT_SIZE = NUMBER_OF_COLUMN - 2
 OUTPUT_SIZE = 1
 HIDDEN_LAYERS = [8, 8, 8]
+SEED = None # None for random, number for set a seed
 
 # Learning define
 LEARNING_LOOP = 10000

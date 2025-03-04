@@ -6,7 +6,7 @@
 #    By: gugus <gugus@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/21 15:08:58 by gugus             #+#    #+#              #
-#    Updated: 2025/03/04 15:32:38 by gugus            ###   ########.fr        #
+#    Updated: 2025/03/04 15:43:11 by gugus            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,6 +21,7 @@ from network.loss import            logLoss
 from network.neuralNetwork import   NeuralNetwork
 
 import numpy as np
+import seaborn as sns
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 
@@ -161,23 +162,29 @@ print(f"Model validation accuracy : {(1 - (errors / nbDataValidation)) * 100:.2f
 fig, ax = plt.subplots(nrows=1, ncols=3, figsize=(21, 5))
 fig.canvas.manager.set_window_title("Training plots")
 
+sns.set_style("whitegrid")
 ax[0].plot(x_plots, trainLosses, label="train loss")
-ax[0].set_title("train loss over training")
-ax[0].set_xlabel("training loop")
-ax[0].set_ylabel("train loss")
+ax[0].set_title("Train loss over training")
+ax[0].set_xlabel("Training loop")
+ax[0].set_ylabel("Train loss")
+ax[0].grid(visible=True)
 ax[0].legend()
 
+sns.set_style("whitegrid")
 ax[1].plot(x_plots, validationLosses, label="validation loss")
-ax[1].set_title("validation loss over training")
-ax[1].set_xlabel("training loop")
-ax[1].set_ylabel("validation loss")
+ax[1].set_title("Validation loss over training")
+ax[1].set_xlabel("Training loop")
+ax[1].set_ylabel("Validation loss")
+ax[1].grid(visible=True)
 ax[1].legend()
 
+sns.set_style("whitegrid")
 ax[2].plot(x_plots, trainAccuracy, label="train accuracy")
 ax[2].plot(x_plots, validationAccuracy, label="validation accuracy")
-ax[2].set_title("accuracy over training")
-ax[2].set_xlabel("training loop")
-ax[2].set_ylabel("accuracy")
+ax[2].set_title("Accuracy over training")
+ax[2].set_xlabel("Training loop")
+ax[2].set_ylabel("Accuracy")
+ax[2].grid(visible=True)
 ax[2].legend()
 
 plt.show()

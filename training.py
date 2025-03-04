@@ -6,14 +6,14 @@
 #    By: gugus <gugus@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/21 15:08:58 by gugus             #+#    #+#              #
-#    Updated: 2025/03/04 15:43:11 by gugus            ###   ########.fr        #
+#    Updated: 2025/03/04 16:06:05 by gugus            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 from define import                  TRAINING_DATA_FILE, VALIDATION_DATA_FILE,\
-                                    PARAMS_FILE,\
-                                    HIDDEN_LAYERS, INPUT_SIZE,\
-                                    LEARNING_LOOP
+                                    PARAMS_FILE, HIDDEN_LAYERS, INPUT_SIZE,\
+                                    LEARNING_LOOP, EARLY_SAME_LIMIT,\
+                                    EARLY_SAME_PRECISION
 from parsing.file import            readFile, writeInFile
 from parsing.parse import           parseData
 from parsing.string import          vectorToStr, matrixToStr
@@ -95,6 +95,7 @@ trainLosses = []
 validationLosses = []
 trainAccuracy = []
 validationAccuracy = []
+nbEarlySame = 0
 
 trainLoop = tqdm(range(LEARNING_LOOP))
 for itLoop in trainLoop:
@@ -115,18 +116,24 @@ for itLoop in trainLoop:
         accuracy = (1 - (errors / nbDataTrain)) * 100
         trainAccuracy.append(accuracy)
 
+        # Update display
+        loss /= 1e+17
+        trainLoop.set_description(f"loss {loss:.2f}e+17, accuracy {accuracy:.2f}%")
+
         # Validation
         results = neuralNetwork.forwardPropagation(X_validation)
-        validationLosses.append(logLoss(Y_validation, results))
+        loss = logLoss(Y_validation, results)
+        validationLosses.append(loss)
         errors = 0
         for y in range(nbDataValidation):
             if Y_validation[0, y] != (results[0, y] >= 0.5):
                 errors += 1
         validationAccuracy.append((1 - (errors / nbDataValidation)) * 100)
-
-        # Update
-        loss /= 1e+17
-        trainLoop.set_description(f"loss {loss:.2f}e+17, accuracy {accuracy:.2f}%")
+        if itLoop > 0 and (validationLosses[-2] - loss) < EARLY_SAME_PRECISION:
+            nbEarlySame += 1
+            if nbEarlySame == EARLY_SAME_LIMIT:
+                trainLoop.total = itLoop
+                break
 
 
 # Save params

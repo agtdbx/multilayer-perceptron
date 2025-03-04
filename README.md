@@ -30,11 +30,20 @@ python3 splitData.py <data_path.cvs> <percentage of data for training>
 ```
 ### Training
 Script for training the neural network.
+Display plots at the end of executions.
+You need to have execute split script before.
 ```
 python3 training.py
 ```
 ### Validation
 Script for validate the neural network training.
+You need to have execute training script before.
 ```
 python3 validation.py
+```
+### Compare
+Script for compare training between neural network with different hidden layer.
+Display plots at the end of executions.
+```
+python3 compare.py
 ```

@@ -6,7 +6,7 @@
 #    By: gugus <gugus@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/21 15:08:58 by gugus             #+#    #+#              #
-#    Updated: 2025/03/04 16:06:05 by gugus            ###   ########.fr        #
+#    Updated: 2025/03/04 16:40:54 by gugus            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,7 +21,6 @@ from network.loss import            logLoss
 from network.neuralNetwork import   NeuralNetwork
 
 import numpy as np
-import seaborn as sns
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 
@@ -118,7 +117,8 @@ for itLoop in trainLoop:
 
         # Update display
         loss /= 1e+17
-        trainLoop.set_description(f"loss {loss:.2f}e+17, accuracy {accuracy:.2f}%")
+        description = f"loss {loss:.2f}e+17, accuracy {accuracy:.2f}%"
+        trainLoop.set_description(description)
 
         # Validation
         results = neuralNetwork.forwardPropagation(X_validation)
@@ -129,7 +129,8 @@ for itLoop in trainLoop:
             if Y_validation[0, y] != (results[0, y] >= 0.5):
                 errors += 1
         validationAccuracy.append((1 - (errors / nbDataValidation)) * 100)
-        if itLoop > 0 and (validationLosses[-2] - loss) < EARLY_SAME_PRECISION:
+        if itLoop == 0: continue
+        if (validationLosses[-2] - loss) < EARLY_SAME_PRECISION:
             nbEarlySame += 1
             if nbEarlySame == EARLY_SAME_LIMIT:
                 trainLoop.total = itLoop
@@ -162,14 +163,14 @@ errors = 0
 for y in range(nbDataValidation):
     if Y_validation[0, y] != (results[0, y] >= 0.5):
         errors += 1
-print(f"Model validation accuracy : {(1 - (errors / nbDataValidation)) * 100:.2f}%")
+accuracy = (1 - (errors / nbDataValidation)) * 100
+print(f"Model validation accuracy : {accuracy:.2f}%")
 
 
 # Plots of training
 fig, ax = plt.subplots(nrows=1, ncols=3, figsize=(21, 5))
 fig.canvas.manager.set_window_title("Training plots")
 
-sns.set_style("whitegrid")
 ax[0].plot(x_plots, trainLosses, label="train loss")
 ax[0].set_title("Train loss over training")
 ax[0].set_xlabel("Training loop")
@@ -177,7 +178,6 @@ ax[0].set_ylabel("Train loss")
 ax[0].grid(visible=True)
 ax[0].legend()
 
-sns.set_style("whitegrid")
 ax[1].plot(x_plots, validationLosses, label="validation loss")
 ax[1].set_title("Validation loss over training")
 ax[1].set_xlabel("Training loop")
@@ -185,7 +185,6 @@ ax[1].set_ylabel("Validation loss")
 ax[1].grid(visible=True)
 ax[1].legend()
 
-sns.set_style("whitegrid")
 ax[2].plot(x_plots, trainAccuracy, label="train accuracy")
 ax[2].plot(x_plots, validationAccuracy, label="validation accuracy")
 ax[2].set_title("Accuracy over training")

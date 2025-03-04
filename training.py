@@ -6,7 +6,7 @@
 #    By: gugus <gugus@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/21 15:08:58 by gugus             #+#    #+#              #
-#    Updated: 2025/03/04 13:38:39 by gugus            ###   ########.fr        #
+#    Updated: 2025/03/04 15:32:38 by gugus            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,7 +21,9 @@ from network.loss import            logLoss
 from network.neuralNetwork import   NeuralNetwork
 
 import numpy as np
+import matplotlib.pyplot as plt
 from tqdm import tqdm
+
 
 # Get datas
 dataTrainContent = readFile(TRAINING_DATA_FILE)
@@ -87,18 +89,21 @@ for x in range(INPUT_SIZE):
 
 
 # Gradient descent
+x_plots = []
 trainLosses = []
 validationLosses = []
 trainAccuracy = []
 validationAccuracy = []
 
 trainLoop = tqdm(range(LEARNING_LOOP))
-for nbLoop in trainLoop:
+for itLoop in trainLoop:
     results = neuralNetwork.forwardPropagation(X_train)
     gradients = neuralNetwork.backwardProgatation(Y_train)
     neuralNetwork.applyGradients(gradients)
 
-    if nbLoop % 10 == 0:
+    if itLoop % 10 == 0:
+        x_plots.append(itLoop)
+
         # Train
         loss = logLoss(Y_train, results)
         trainLosses.append(loss)
@@ -153,17 +158,26 @@ print(f"Model validation accuracy : {(1 - (errors / nbDataValidation)) * 100:.2f
 
 
 # Plots of training
-import matplotlib.pyplot as plt
-fig, ax = plt.subplots(nrows=1, ncols=3, figsize=(18, 4))
+fig, ax = plt.subplots(nrows=1, ncols=3, figsize=(21, 5))
+fig.canvas.manager.set_window_title("Training plots")
 
-ax[0].plot(trainLosses, label="train loss")
+ax[0].plot(x_plots, trainLosses, label="train loss")
+ax[0].set_title("train loss over training")
+ax[0].set_xlabel("training loop")
+ax[0].set_ylabel("train loss")
 ax[0].legend()
 
-ax[1].plot(validationLosses, label="validation loss")
+ax[1].plot(x_plots, validationLosses, label="validation loss")
+ax[1].set_title("validation loss over training")
+ax[1].set_xlabel("training loop")
+ax[1].set_ylabel("validation loss")
 ax[1].legend()
 
-ax[2].plot(trainAccuracy, label="train accuracy")
-ax[2].plot(validationAccuracy, label="validation accuracy")
+ax[2].plot(x_plots, trainAccuracy, label="train accuracy")
+ax[2].plot(x_plots, validationAccuracy, label="validation accuracy")
+ax[2].set_title("accuracy over training")
+ax[2].set_xlabel("training loop")
+ax[2].set_ylabel("accuracy")
 ax[2].legend()
 
 plt.show()

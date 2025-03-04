@@ -6,7 +6,7 @@
 #    By: gugus <gugus@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/20 15:14:35 by aderouba          #+#    #+#              #
-#    Updated: 2025/03/03 16:25:03 by gugus            ###   ########.fr        #
+#    Updated: 2025/03/04 13:14:14 by gugus            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -90,6 +90,7 @@ class NeuralNetwork:
             result.append((weights, biases))
 
         return result
+
 
     def forwardPropagation(self,
                            X: Matrix) -> Matrix:

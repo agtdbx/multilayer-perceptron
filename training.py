@@ -6,7 +6,7 @@
 #    By: gugus <gugus@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/21 15:08:58 by gugus             #+#    #+#              #
-#    Updated: 2025/03/03 16:40:05 by gugus            ###   ########.fr        #
+#    Updated: 2025/03/04 13:38:39 by gugus            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -33,14 +33,14 @@ if datasTrain == None:
     exit(1)
 nbDataTrain = len(datasTrain)
 
-dataTestContent = readFile(VALIDATION_DATA_FILE)
-if dataTestContent == None:
+dataValidationContent = readFile(VALIDATION_DATA_FILE)
+if dataValidationContent == None:
     exit(1)
 
-datasTest = parseData(dataTestContent)
-if datasTest == None:
+datasValidation = parseData(dataValidationContent)
+if datasValidation == None:
     exit(1)
-nbDataTest = len(datasTest)
+nbDataValidation = len(datasValidation)
 
 
 # Put data into good format for training
@@ -54,15 +54,15 @@ X_train = np.array(lst_inputsTrain).T
 Y_train = np.array(lst_resultTrain).T
 
 
-# Put data into good format for testing
-lst_inputsTest = []
-lst_resultTest = []
-for inputs, result, _ in datasTest:
-    lst_inputsTest.append(inputs)
-    lst_resultTest.append([result])
+# Put data into good format for validation
+lst_inputsValidation = []
+lst_resultValidation = []
+for inputs, result, _ in datasValidation:
+    lst_inputsValidation.append(inputs)
+    lst_resultValidation.append([result])
 
-X_test = np.array(lst_inputsTest).T
-Y_test = np.array(lst_resultTest).T
+X_validation = np.array(lst_inputsValidation).T
+Y_validation = np.array(lst_resultValidation).T
 
 
 # Create neural network
@@ -81,38 +81,46 @@ for x in range(INPUT_SIZE):
         inputMax = max(X_train[x, y], inputMax)
     for y in range(nbDataTrain):
         X_train[x, y] /= inputMax
-    for y in range(nbDataTest):
-        X_test[x, y] /= inputMax
+    for y in range(nbDataValidation):
+        X_validation[x, y] /= inputMax
     maxes.append(inputMax)
 
 
 # Gradient descent
 trainLosses = []
-testLosses = []
+validationLosses = []
 trainAccuracy = []
-testAccuracy = []
-for nbLoop in tqdm(range(LEARNING_LOOP)):
+validationAccuracy = []
+
+trainLoop = tqdm(range(LEARNING_LOOP))
+for nbLoop in trainLoop:
     results = neuralNetwork.forwardPropagation(X_train)
     gradients = neuralNetwork.backwardProgatation(Y_train)
     neuralNetwork.applyGradients(gradients)
 
     if nbLoop % 10 == 0:
         # Train
-        trainLosses.append(logLoss(Y_train, results))
+        loss = logLoss(Y_train, results)
+        trainLosses.append(loss)
         errors = 0
         for y in range(nbDataTrain):
             if Y_train[0, y] != (results[0, y] >= 0.5):
                 errors += 1
-        trainAccuracy.append((1 - (errors / nbDataTrain)) * 100)
+        accuracy = (1 - (errors / nbDataTrain)) * 100
+        trainAccuracy.append(accuracy)
 
-        # Test
-        results = neuralNetwork.forwardPropagation(X_test)
-        testLosses.append(logLoss(Y_test, results))
+        # Validation
+        results = neuralNetwork.forwardPropagation(X_validation)
+        validationLosses.append(logLoss(Y_validation, results))
         errors = 0
-        for y in range(nbDataTest):
-            if Y_test[0, y] != (results[0, y] >= 0.5):
+        for y in range(nbDataValidation):
+            if Y_validation[0, y] != (results[0, y] >= 0.5):
                 errors += 1
-        testAccuracy.append((1 - (errors / nbDataTest)) * 100)
+        validationAccuracy.append((1 - (errors / nbDataValidation)) * 100)
+
+        # Update
+        loss /= 1e+17
+        trainLoop.set_description(f"loss {loss:.2f}e+17, accuracy {accuracy:.2f}%")
 
 
 # Save params
@@ -136,12 +144,12 @@ for y in range(nbDataTrain):
         errors += 1
 print(f"Model train accuracy : {(1 - (errors / nbDataTrain)) * 100:.2f}%")
 
-results = neuralNetwork.forwardPropagation(X_test)
+results = neuralNetwork.forwardPropagation(X_validation)
 errors = 0
-for y in range(nbDataTest):
-    if Y_test[0, y] != (results[0, y] >= 0.5):
+for y in range(nbDataValidation):
+    if Y_validation[0, y] != (results[0, y] >= 0.5):
         errors += 1
-print(f"Model test accuracy  : {(1 - (errors / nbDataTest)) * 100:.2f}%")
+print(f"Model validation accuracy : {(1 - (errors / nbDataValidation)) * 100:.2f}%")
 
 
 # Plots of training
@@ -151,11 +159,11 @@ fig, ax = plt.subplots(nrows=1, ncols=3, figsize=(18, 4))
 ax[0].plot(trainLosses, label="train loss")
 ax[0].legend()
 
-ax[1].plot(testLosses, label="test loss")
+ax[1].plot(validationLosses, label="validation loss")
 ax[1].legend()
 
 ax[2].plot(trainAccuracy, label="train accuracy")
-ax[2].plot(testAccuracy, label="test accuracy")
+ax[2].plot(validationAccuracy, label="validation accuracy")
 ax[2].legend()
 
 plt.show()

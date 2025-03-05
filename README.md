@@ -1,7 +1,7 @@
 # Multilayer perceptron
 
-This is a 42 project for learn how multi layer perceptron works.
-Code one be yourself and train it on given data.
+This is a 42 project for learn how multilayer perceptron works.
+We need to code one be ourself and train it on given data.
 
 ## Setup
 ### Virtual environement

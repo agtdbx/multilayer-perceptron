@@ -6,7 +6,7 @@
 #    By: gugus <gugus@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/21 15:08:58 by gugus             #+#    #+#              #
-#    Updated: 2025/03/04 16:40:54 by gugus            ###   ########.fr        #
+#    Updated: 2025/03/05 13:12:53 by gugus            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -54,6 +54,7 @@ for inputs, result, _ in datasTrain:
 
 X_train = np.array(lst_inputsTrain).T
 Y_train = np.array(lst_resultTrain).T
+print(f"Train data shape {X_train.shape}")
 
 
 # Put data into good format for validation
@@ -65,6 +66,7 @@ for inputs, result, _ in datasValidation:
 
 X_validation = np.array(lst_inputsValidation).T
 Y_validation = np.array(lst_resultValidation).T
+print(f"Validation data shape {X_validation.shape}")
 
 
 # Create neural network

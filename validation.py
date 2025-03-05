@@ -6,7 +6,7 @@
 #    By: gugus <gugus@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/21 15:08:58 by gugus             #+#    #+#              #
-#    Updated: 2025/03/03 16:37:14 by gugus            ###   ########.fr        #
+#    Updated: 2025/03/05 14:27:44 by gugus            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -82,4 +82,4 @@ for i in range(nbData):
         nbError += 1
 
 precision = (1 - (nbError / nbData)) * 100
-print(f"{nbError} errors on {nbData} datas, precision ({precision:.2f}%)")
+print(f"{nbError} errors on {nbData} datas, {precision:.2f}% of precision")

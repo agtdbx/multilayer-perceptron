@@ -6,7 +6,7 @@
 #    By: gugus <gugus@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/21 15:08:58 by gugus             #+#    #+#              #
-#    Updated: 2025/03/05 13:12:53 by gugus            ###   ########.fr        #
+#    Updated: 2025/03/05 14:17:02 by gugus            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -45,7 +45,7 @@ if datasValidation == None:
 nbDataValidation = len(datasValidation)
 
 
-# Put data into good format for training
+# Put data into positive format for training
 lst_inputsTrain = []
 lst_resultTrain = []
 for inputs, result, _ in datasTrain:
@@ -57,7 +57,7 @@ Y_train = np.array(lst_resultTrain).T
 print(f"Train data shape {X_train.shape}")
 
 
-# Put data into good format for validation
+# Put data into positive format for validation
 lst_inputsValidation = []
 lst_resultValidation = []
 for inputs, result, _ in datasValidation:
@@ -96,6 +96,8 @@ trainLosses = []
 validationLosses = []
 trainAccuracy = []
 validationAccuracy = []
+trainConfusion = []
+validationConfusion = []
 nbEarlySame = 0
 
 trainLoop = tqdm(range(LEARNING_LOOP))
@@ -111,11 +113,16 @@ for itLoop in trainLoop:
         loss = logLoss(Y_train, results)
         trainLosses.append(loss)
         errors = 0
-        for y in range(nbDataTrain):
-            if Y_train[0, y] != (results[0, y] >= 0.5):
+        resultMatrix = np.array([[0, 0], [0, 0]])
+        for i in range(nbDataTrain):
+            y = Y_train[0, i]
+            a = int(results[0, i] >= 0.5)
+            resultMatrix[y, a] += 1
+            if y != a:
                 errors += 1
         accuracy = (1 - (errors / nbDataTrain)) * 100
         trainAccuracy.append(accuracy)
+        trainConfusion.append(resultMatrix)
 
         # Update display
         loss /= 1e+17
@@ -127,11 +134,20 @@ for itLoop in trainLoop:
         loss = logLoss(Y_validation, results)
         validationLosses.append(loss)
         errors = 0
-        for y in range(nbDataValidation):
-            if Y_validation[0, y] != (results[0, y] >= 0.5):
+        resultMatrix = np.array([[0, 0], [0, 0]])
+        for i in range(nbDataValidation):
+            y = Y_validation[0, i]
+            a = int(results[0, i] >= 0.5)
+            resultMatrix[y, a] += 1
+            if y != a:
                 errors += 1
         validationAccuracy.append((1 - (errors / nbDataValidation)) * 100)
-        if itLoop == 0: continue
+        validationConfusion.append(resultMatrix)
+
+        # Early stop
+        if itLoop == 0:
+            continue
+
         if (validationLosses[-2] - loss) < EARLY_SAME_PRECISION:
             nbEarlySame += 1
             if nbEarlySame == EARLY_SAME_LIMIT:
@@ -169,30 +185,83 @@ accuracy = (1 - (errors / nbDataValidation)) * 100
 print(f"Model validation accuracy : {accuracy:.2f}%")
 
 
+# Transform list of result matrix into lists for plotting
+train_positive_0 = []
+train_negative_0 = []
+train_negative_1 = []
+train_positive_1 = []
+scale = 1 / nbDataTrain * 100
+for confusionMatrix in trainConfusion:
+    train_positive_0.append(confusionMatrix[0, 0] * scale)
+    train_negative_0.append(confusionMatrix[0, 1] * scale)
+    train_negative_1.append(confusionMatrix[1, 0] * scale)
+    train_positive_1.append(confusionMatrix[1, 1] * scale)
+
+validation_positive_0 = []
+validation_negative_0 = []
+validation_negative_1 = []
+validation_positive_1 = []
+scale = 1 / nbDataValidation * 100
+for confusionMatrix in validationConfusion:
+    validation_positive_0.append(confusionMatrix[0, 0] * scale)
+    validation_negative_0.append(confusionMatrix[0, 1] * scale)
+    validation_negative_1.append(confusionMatrix[1, 0] * scale)
+    validation_positive_1.append(confusionMatrix[1, 1] * scale)
+
+
 # Plots of training
-fig, ax = plt.subplots(nrows=1, ncols=3, figsize=(21, 5))
+fig, ax = plt.subplots(nrows=2, ncols=3, figsize=(18, 10))
 fig.canvas.manager.set_window_title("Training plots")
 
-ax[0].plot(x_plots, trainLosses, label="train loss")
-ax[0].set_title("Train loss over training")
-ax[0].set_xlabel("Training loop")
-ax[0].set_ylabel("Train loss")
-ax[0].grid(visible=True)
-ax[0].legend()
+ax[0][0].plot(x_plots, trainLosses, label="train loss")
+ax[0][0].set_title("Train loss over training")
+ax[0][0].set_xlabel("Training loop")
+ax[0][0].set_ylabel("Train loss")
+ax[0][0].grid(visible=True)
+ax[0][0].legend()
 
-ax[1].plot(x_plots, validationLosses, label="validation loss")
-ax[1].set_title("Validation loss over training")
-ax[1].set_xlabel("Training loop")
-ax[1].set_ylabel("Validation loss")
-ax[1].grid(visible=True)
-ax[1].legend()
+ax[0][1].plot(x_plots, validationLosses, label="validation loss")
+ax[0][1].set_title("Validation loss over training")
+ax[0][1].set_xlabel("Training loop")
+ax[0][1].set_ylabel("Validation loss")
+ax[0][1].grid(visible=True)
+ax[0][1].legend()
 
-ax[2].plot(x_plots, trainAccuracy, label="train accuracy")
-ax[2].plot(x_plots, validationAccuracy, label="validation accuracy")
-ax[2].set_title("Accuracy over training")
-ax[2].set_xlabel("Training loop")
-ax[2].set_ylabel("Accuracy")
-ax[2].grid(visible=True)
-ax[2].legend()
+ax[0][2].plot(x_plots, trainAccuracy, label="train accuracy")
+ax[0][2].plot(x_plots, validationAccuracy, label="validation accuracy")
+ax[0][2].set_title("Accuracy over training")
+ax[0][2].set_xlabel("Training loop")
+ax[0][2].set_ylabel("Accuracy")
+ax[0][2].grid(visible=True)
+ax[0][2].legend()
 
+ax[1][0].plot(x_plots, train_positive_0, label="positive train 0")
+ax[1][0].plot(x_plots, train_negative_0, label="negative train 0")
+ax[1][0].plot(x_plots, validation_positive_0, label="positive validation 0")
+ax[1][0].plot(x_plots, validation_negative_0, label="negative validation 0")
+ax[1][0].set_title("Confusion of 0 over training")
+ax[1][0].set_xlabel("Training loop")
+ax[1][0].set_ylabel("precentage of result")
+ax[1][0].grid(visible=True)
+ax[1][0].legend()
+
+ax[1][1].plot(x_plots, train_positive_1, label="positive train 1")
+ax[1][1].plot(x_plots, train_negative_1, label="negative train 1")
+ax[1][1].plot(x_plots, validation_positive_1, label="positive validation 1")
+ax[1][1].plot(x_plots, validation_negative_1, label="negative validation 1")
+ax[1][1].set_title("Confusion of 1 over training")
+ax[1][1].set_xlabel("Training loop")
+ax[1][1].set_ylabel("precentage of result")
+ax[1][1].grid(visible=True)
+ax[1][1].legend()
+
+confusionMatrix = validationConfusion[-1] / nbDataValidation
+ax[1][2].matshow(confusionMatrix, cmap='seismic')
+for (x, y), value in np.ndenumerate(confusionMatrix):
+    ax[1][2].text(y, x, f'{value:0.2f}', ha="center", va="center",
+                  color="white", size=15)
+ax[1][2].set_title("Confusion matrix on validation data")
+ax[1][2].set_xlabel("Neural network ouput")
+ax[1][2].set_ylabel("Wanted output")
+fig.tight_layout(pad=5)
 plt.show()

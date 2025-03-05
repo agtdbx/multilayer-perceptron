@@ -6,7 +6,7 @@
 #    By: gugus <gugus@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/20 18:02:30 by aderouba          #+#    #+#              #
-#    Updated: 2025/03/04 16:39:58 by gugus            ###   ########.fr        #
+#    Updated: 2025/03/05 17:09:08 by gugus            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -30,7 +30,7 @@ SEED = None # None for random, number for set a seed
 # Learning define
 LEARNING_LOOP = 10000
 LEARNING_RATE = 0.1
-EARLY_SAME_LIMIT = 20
+EARLY_SAME_LIMIT = 30
 EARLY_SAME_PRECISION = 1e+13
 
 # Compare

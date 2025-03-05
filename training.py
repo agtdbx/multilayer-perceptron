@@ -6,7 +6,7 @@
 #    By: gugus <gugus@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/21 15:08:58 by gugus             #+#    #+#              #
-#    Updated: 2025/03/05 14:17:02 by gugus            ###   ########.fr        #
+#    Updated: 2025/03/05 17:08:16 by gugus            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -45,7 +45,7 @@ if datasValidation == None:
 nbDataValidation = len(datasValidation)
 
 
-# Put data into positive format for training
+# Put data into good format for training
 lst_inputsTrain = []
 lst_resultTrain = []
 for inputs, result, _ in datasTrain:
@@ -57,7 +57,7 @@ Y_train = np.array(lst_resultTrain).T
 print(f"Train data shape {X_train.shape}")
 
 
-# Put data into positive format for validation
+# Put data into good format for validation
 lst_inputsValidation = []
 lst_resultValidation = []
 for inputs, result, _ in datasValidation:
@@ -186,27 +186,27 @@ print(f"Model validation accuracy : {accuracy:.2f}%")
 
 
 # Transform list of result matrix into lists for plotting
-train_positive_0 = []
-train_negative_0 = []
-train_negative_1 = []
-train_positive_1 = []
+train_expected_0 = []
+train_error_0 = []
+train_error_1 = []
+train_expected_1 = []
 scale = 1 / nbDataTrain * 100
 for confusionMatrix in trainConfusion:
-    train_positive_0.append(confusionMatrix[0, 0] * scale)
-    train_negative_0.append(confusionMatrix[0, 1] * scale)
-    train_negative_1.append(confusionMatrix[1, 0] * scale)
-    train_positive_1.append(confusionMatrix[1, 1] * scale)
+    train_expected_0.append(confusionMatrix[0, 0] * scale)
+    train_error_0.append(confusionMatrix[0, 1] * scale)
+    train_error_1.append(confusionMatrix[1, 0] * scale)
+    train_expected_1.append(confusionMatrix[1, 1] * scale)
 
-validation_positive_0 = []
-validation_negative_0 = []
-validation_negative_1 = []
-validation_positive_1 = []
+validation_expected_0 = []
+validation_error_0 = []
+validation_error_1 = []
+validation_expected_1 = []
 scale = 1 / nbDataValidation * 100
 for confusionMatrix in validationConfusion:
-    validation_positive_0.append(confusionMatrix[0, 0] * scale)
-    validation_negative_0.append(confusionMatrix[0, 1] * scale)
-    validation_negative_1.append(confusionMatrix[1, 0] * scale)
-    validation_positive_1.append(confusionMatrix[1, 1] * scale)
+    validation_expected_0.append(confusionMatrix[0, 0] * scale)
+    validation_error_0.append(confusionMatrix[0, 1] * scale)
+    validation_error_1.append(confusionMatrix[1, 0] * scale)
+    validation_expected_1.append(confusionMatrix[1, 1] * scale)
 
 
 # Plots of training
@@ -235,20 +235,20 @@ ax[0][2].set_ylabel("Accuracy")
 ax[0][2].grid(visible=True)
 ax[0][2].legend()
 
-ax[1][0].plot(x_plots, train_positive_0, label="positive train 0")
-ax[1][0].plot(x_plots, train_negative_0, label="negative train 0")
-ax[1][0].plot(x_plots, validation_positive_0, label="positive validation 0")
-ax[1][0].plot(x_plots, validation_negative_0, label="negative validation 0")
+ax[1][0].plot(x_plots, train_expected_0, label="expected train 0")
+ax[1][0].plot(x_plots, train_error_0, label="error train 0")
+ax[1][0].plot(x_plots, validation_expected_0, label="expected validation 0")
+ax[1][0].plot(x_plots, validation_error_0, label="error validation 0")
 ax[1][0].set_title("Confusion of 0 over training")
 ax[1][0].set_xlabel("Training loop")
 ax[1][0].set_ylabel("precentage of result")
 ax[1][0].grid(visible=True)
 ax[1][0].legend()
 
-ax[1][1].plot(x_plots, train_positive_1, label="positive train 1")
-ax[1][1].plot(x_plots, train_negative_1, label="negative train 1")
-ax[1][1].plot(x_plots, validation_positive_1, label="positive validation 1")
-ax[1][1].plot(x_plots, validation_negative_1, label="negative validation 1")
+ax[1][1].plot(x_plots, train_expected_1, label="expected train 1")
+ax[1][1].plot(x_plots, train_error_1, label="error train 1")
+ax[1][1].plot(x_plots, validation_expected_1, label="expected validation 1")
+ax[1][1].plot(x_plots, validation_error_1, label="error validation 1")
 ax[1][1].set_title("Confusion of 1 over training")
 ax[1][1].set_xlabel("Training loop")
 ax[1][1].set_ylabel("precentage of result")

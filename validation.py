@@ -6,7 +6,7 @@
 #    By: gugus <gugus@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/21 15:08:58 by gugus             #+#    #+#              #
-#    Updated: 2025/03/06 18:22:16 by gugus            ###   ########.fr        #
+#    Updated: 2025/03/06 18:29:26 by gugus            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -65,7 +65,7 @@ dimensions = list(hiddenLayers)
 dimensions.insert(0, X_validation.shape[0])
 dimensions.append(Y_validation.shape[0])
 
-print(f"Network dimensions {dimensions}")
+print(f"Network dimensions : {dimensions}")
 neuralNetwork = NeuralNetwork(dimensions)
 try:
     neuralNetwork.loadParameters(NNparams)

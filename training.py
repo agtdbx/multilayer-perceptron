@@ -6,7 +6,7 @@
 #    By: gugus <gugus@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/21 15:08:58 by gugus             #+#    #+#              #
-#    Updated: 2025/03/05 17:08:16 by gugus            ###   ########.fr        #
+#    Updated: 2025/03/06 18:11:46 by gugus            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,13 +16,25 @@ from define import                  TRAINING_DATA_FILE, VALIDATION_DATA_FILE,\
                                     EARLY_SAME_PRECISION
 from parsing.file import            readFile, writeInFile
 from parsing.parse import           parseData
-from parsing.string import          vectorToStr, matrixToStr
+from parsing.string import          vectorToStr, matrixToStr,\
+                                    strToLayers, layersToStr
 from network.loss import            logLoss
 from network.neuralNetwork import   NeuralNetwork
 
+import sys
 import numpy as np
 import matplotlib.pyplot as plt
 from tqdm import tqdm
+
+
+# Check if we have a parameter
+argc = len(sys.argv)
+if argc > 1:
+    hiddenLayers = strToLayers(sys.argv[1])
+    if hiddenLayers == None:
+        exit(1)
+else:
+    hiddenLayers = HIDDEN_LAYERS
 
 
 # Get datas
@@ -70,10 +82,11 @@ print(f"Validation data shape {X_validation.shape}")
 
 
 # Create neural network
-dimensions = list(HIDDEN_LAYERS)
+dimensions = list(hiddenLayers)
 dimensions.insert(0, X_train.shape[0])
 dimensions.append(Y_train.shape[0])
 
+print(f"Network dimensions : {dimensions}")
 neuralNetwork = NeuralNetwork(dimensions)
 
 
@@ -158,7 +171,7 @@ for itLoop in trainLoop:
 # Save params
 NNparams = neuralNetwork.getParameters()
 
-strParams = vectorToStr(maxes) + '\n'
+strParams = layersToStr(hiddenLayers) + '\n' + vectorToStr(maxes) + '\n'
 for weightMatrix, biasVector in NNparams:
     strWeigths = matrixToStr(weightMatrix)
     strBias = vectorToStr(biasVector)

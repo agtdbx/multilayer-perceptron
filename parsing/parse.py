@@ -6,14 +6,14 @@
 #    By: gugus <gugus@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/13 17:27:15 by aderouba          #+#    #+#              #
-#    Updated: 2025/03/03 16:18:16 by gugus            ###   ########.fr        #
+#    Updated: 2025/03/06 18:18:00 by gugus            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 from define import          NUMBER_OF_COLUMN
 from parsing.print import   printError
 from parsing.string import  strToInt, strToFloat, strToResult,\
-                            strToVector, strToMatrix
+                            strToVector, strToMatrix, strToLayers
 
 
 def parseData(fileContent: str) -> list[tuple[list[float], int, int]]:
@@ -50,10 +50,14 @@ def parseData(fileContent: str) -> list[tuple[list[float], int, int]]:
     return data
 
 
-def parseNNparams(fileContent: str) -> tuple[list[float], list[tuple[list[list[float]], list[float]]]]:
+def parseNNparams(fileContent: str) -> tuple[list[int], list[float],
+                                             list[tuple[list[list[float]],
+                                                        list[float]]]]:
     """
-    Function for parse the network params file content and return a list tuples
-    like [(weigth matrix, bias vector),...].
+    Function for parse the network params file content and return tuple
+    with the layers as a list of int, the maxes as a list of floast
+    the weights and biases as a list tuples like
+    [(weigth matrix, bias vector),...].
     Print it's error.
     @param  fileContent The file content to parse
     @return The file parsed as a tupple, or None in case of error.
@@ -62,20 +66,26 @@ def parseNNparams(fileContent: str) -> tuple[list[float], list[tuple[list[list[f
     lines = fileContent.split("\n")
 
     # Error if file is empty
-    if len(lines) == 0:
-        printError("file is empty")
+    if len(lines) < 3:
+        printError("missing lines in file")
         return None
 
     # Parse first line
     line = lines.pop(0)
+    layers = strToLayers(line)
+    if layers == None:
+        return None
+
+    # Parse second line
+    line = lines.pop(0)
     maxes = strToVector(line)
     if maxes == None:
-        printError(f"[l{1};c1] - bad maxes format")
+        printError(f"[l{2};c1] - bad maxes format")
         return None
 
     # Parse all other lines
     result = []
-    lineNumber = 2
+    lineNumber = 3
     for line in lines:
         # If a line is empty, skip it
         if line == "":
@@ -88,7 +98,7 @@ def parseNNparams(fileContent: str) -> tuple[list[float], list[tuple[list[list[f
         result.append(dataLine)
         lineNumber += 1
 
-    return maxes, result
+    return layers, maxes, result
 
 
 def _parseLineData(line: str, lineNumber: int) -> tuple[list[float], int, int]:

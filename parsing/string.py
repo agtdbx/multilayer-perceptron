@@ -6,9 +6,11 @@
 #    By: gugus <gugus@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/13 17:27:10 by aderouba          #+#    #+#              #
-#    Updated: 2025/02/21 16:37:47 by gugus            ###   ########.fr        #
+#    Updated: 2025/03/06 18:08:44 by gugus            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
+
+from parsing.print import   printError
 
 def strToInt(string: str) -> int:
     """
@@ -67,6 +69,31 @@ def strToVector(string: str) -> list[float]:
     return result
 
 
+def strToLayers(string: str) -> list[int]:
+    """
+    Function to convert a string to network layers as a list of int.
+    Print it's error.
+    @param  string  The string input.
+    @return The result as a list of int, or None in case of error.
+    """
+    result = string.split(',')
+    if len(result) == 0:
+        printError("It must have at least one hidden layer")
+        return None
+
+    for i in range(len(result)):
+        value = strToInt(result[i])
+        if value == None:
+            printError("Layer dimension must be an interger")
+            return None
+        if value <= 0:
+            printError("Layer dimension must be greater than 0")
+            return None
+        result[i] = value
+
+    return result
+
+
 def strToMatrix(string: str) -> list[list[float]]:
     """
     Function to convert a string to a matrix of float.
@@ -96,6 +123,22 @@ def vectorToStr(vector: list[float]) -> str:
         if i > 0:
             result += ','
         result += str(vector[i])
+
+    return result
+
+
+def layersToStr(layers: list[int]) -> str:
+    """
+    Function to convert network layers as a vector of int to a string.
+    @param  vector  The layers as a list of int.
+    @return The string layers.
+    """
+    result = ""
+
+    for i in range(len(layers)):
+        if i > 0:
+            result += ','
+        result += str(layers[i])
 
     return result
 

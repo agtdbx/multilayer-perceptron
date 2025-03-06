@@ -6,12 +6,12 @@
 #    By: gugus <gugus@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/21 15:08:58 by gugus             #+#    #+#              #
-#    Updated: 2025/03/05 14:27:44 by gugus            ###   ########.fr        #
+#    Updated: 2025/03/06 18:22:16 by gugus            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 from define import                  VALIDATION_DATA_FILE, PARAMS_FILE,\
-                                    HIDDEN_LAYERS, INPUT_SIZE
+                                    INPUT_SIZE
 from parsing.file import            readFile
 from parsing.parse import           parseData, parseNNparams
 from network.neuralNetwork import   NeuralNetwork
@@ -39,7 +39,7 @@ if NNparamsContent == None:
 parsedParams = parseNNparams(NNparamsContent)
 if parsedParams == None:
     exit(1)
-maxes, NNparams = parsedParams
+hiddenLayers, maxes, NNparams = parsedParams
 
 
 # Put data into good format for training
@@ -61,10 +61,11 @@ for x in range(INPUT_SIZE):
 
 
 # Create neural network
-dimensions = list(HIDDEN_LAYERS)
+dimensions = list(hiddenLayers)
 dimensions.insert(0, X_validation.shape[0])
 dimensions.append(Y_validation.shape[0])
 
+print(f"Network dimensions {dimensions}")
 neuralNetwork = NeuralNetwork(dimensions)
 try:
     neuralNetwork.loadParameters(NNparams)
@@ -81,5 +82,8 @@ for i in range(nbData):
     if Y_validation[0, i] != result[0, i]:
         nbError += 1
 
-precision = (1 - (nbError / nbData)) * 100
-print(f"{nbError} errors on {nbData} datas, {precision:.2f}% of precision")
+error = (nbError / nbData)
+precision = (1 - error)
+print(f"{nbError} errors on {nbData} datas")
+print(f"error : {error:.4f} ({error * 100:.2f}%)")
+print(f"precision : {precision:.4f} ({precision * 100:.2f}%)")

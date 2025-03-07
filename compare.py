@@ -6,7 +6,7 @@
 #    By: gugus <gugus@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/21 15:08:58 by gugus             #+#    #+#              #
-#    Updated: 2025/03/04 16:38:34 by gugus            ###   ########.fr        #
+#    Updated: 2025/03/07 19:31:28 by gugus            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -45,23 +45,35 @@ nbDataValidation = len(datasValidation)
 # Put data into good format for training
 lst_inputsTrain = []
 lst_resultTrain = []
+lst_resultTrainFlat = []
 for inputs, result, _ in datasTrain:
     lst_inputsTrain.append(inputs)
-    lst_resultTrain.append([result])
+    if result == 0:
+        lst_resultTrain.append([1, 0])
+    else:
+        lst_resultTrain.append([0, 1])
+    lst_resultTrainFlat.append(result)
 
 X_train = np.array(lst_inputsTrain).T
 Y_train = np.array(lst_resultTrain).T
+Y_trainFlat = np.array(lst_resultTrainFlat)
 
 
 # Put data into good format for validation
 lst_inputsValidation = []
 lst_resultValidation = []
+lst_resultValidationFlat = []
 for inputs, result, _ in datasValidation:
     lst_inputsValidation.append(inputs)
-    lst_resultValidation.append([result])
+    if result == 0:
+        lst_resultValidation.append([1, 0])
+    else:
+        lst_resultValidation.append([0, 1])
+    lst_resultValidationFlat.append(result)
 
 X_validation = np.array(lst_inputsValidation).T
 Y_validation = np.array(lst_resultValidation).T
+Y_validationFlat = np.array(lst_resultValidationFlat)
 
 
 # Normalize data
@@ -133,7 +145,7 @@ for networkID in range(nbNetwork):
             trainLosses.append(logLoss(Y_train, results))
             errors = 0
             for y in range(nbDataTrain):
-                if Y_train[0, y] != (results[0, y] >= 0.5):
+                if Y_trainFlat[y] != (results[0, y] <= results[1, y]):
                     errors += 1
             accuracy = (1 - (errors / nbDataTrain)) * 100
             trainAccuracy.append(accuracy)
@@ -143,7 +155,7 @@ for networkID in range(nbNetwork):
             validationLosses.append(logLoss(Y_validation, results))
             errors = 0
             for y in range(nbDataValidation):
-                if Y_validation[0, y] != (results[0, y] >= 0.5):
+                if Y_validationFlat[y] != (results[0, y] <= results[1, y]):
                     errors += 1
             validationAccuracy.append((1 - (errors / nbDataValidation)) * 100)
 

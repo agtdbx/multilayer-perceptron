@@ -6,7 +6,7 @@
 #    By: gugus <gugus@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/21 15:08:58 by gugus             #+#    #+#              #
-#    Updated: 2025/03/06 18:11:46 by gugus            ###   ########.fr        #
+#    Updated: 2025/03/07 19:25:02 by gugus            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -60,24 +60,36 @@ nbDataValidation = len(datasValidation)
 # Put data into good format for training
 lst_inputsTrain = []
 lst_resultTrain = []
+lst_resultTrainFlat = []
 for inputs, result, _ in datasTrain:
     lst_inputsTrain.append(inputs)
-    lst_resultTrain.append([result])
+    if result == 0:
+        lst_resultTrain.append([1, 0])
+    else:
+        lst_resultTrain.append([0, 1])
+    lst_resultTrainFlat.append(result)
 
 X_train = np.array(lst_inputsTrain).T
 Y_train = np.array(lst_resultTrain).T
+Y_trainFlat = np.array(lst_resultTrainFlat)
 print(f"Train data shape {X_train.shape}")
 
 
 # Put data into good format for validation
 lst_inputsValidation = []
 lst_resultValidation = []
+lst_resultValidationFlat = []
 for inputs, result, _ in datasValidation:
     lst_inputsValidation.append(inputs)
-    lst_resultValidation.append([result])
+    if result == 0:
+        lst_resultValidation.append([1, 0])
+    else:
+        lst_resultValidation.append([0, 1])
+    lst_resultValidationFlat.append(result)
 
 X_validation = np.array(lst_inputsValidation).T
 Y_validation = np.array(lst_resultValidation).T
+Y_validationFlat = np.array(lst_resultValidationFlat)
 print(f"Validation data shape {X_validation.shape}")
 
 
@@ -112,10 +124,14 @@ validationAccuracy = []
 trainConfusion = []
 validationConfusion = []
 nbEarlySame = 0
+lastLossEarly = 0
 
 trainLoop = tqdm(range(LEARNING_LOOP))
 for itLoop in trainLoop:
     results = neuralNetwork.forwardPropagation(X_train)
+    # loss = logLoss(Y_train, results)
+    # print(loss)
+    # exit()
     gradients = neuralNetwork.backwardProgatation(Y_train)
     neuralNetwork.applyGradients(gradients)
 
@@ -128,8 +144,8 @@ for itLoop in trainLoop:
         errors = 0
         resultMatrix = np.array([[0, 0], [0, 0]])
         for i in range(nbDataTrain):
-            y = Y_train[0, i]
-            a = int(results[0, i] >= 0.5)
+            y = Y_trainFlat[i]
+            a = int(results[0, i] <= results[1, i])
             resultMatrix[y, a] += 1
             if y != a:
                 errors += 1
@@ -138,8 +154,7 @@ for itLoop in trainLoop:
         trainConfusion.append(resultMatrix)
 
         # Update display
-        loss /= 1e+17
-        description = f"loss {loss:.2f}e+17, accuracy {accuracy:.2f}%"
+        description = f"loss {loss:.2f}, accuracy {accuracy:.2f}%"
         trainLoop.set_description(description)
 
         # Validation
@@ -149,8 +164,8 @@ for itLoop in trainLoop:
         errors = 0
         resultMatrix = np.array([[0, 0], [0, 0]])
         for i in range(nbDataValidation):
-            y = Y_validation[0, i]
-            a = int(results[0, i] >= 0.5)
+            y = Y_validationFlat[i]
+            a = int(results[0, i] <= results[1, i])
             resultMatrix[y, a] += 1
             if y != a:
                 errors += 1
@@ -161,11 +176,12 @@ for itLoop in trainLoop:
         if itLoop == 0:
             continue
 
-        if (validationLosses[-2] - loss) < EARLY_SAME_PRECISION:
+        if (lastLossEarly - loss) < EARLY_SAME_PRECISION:
             nbEarlySame += 1
             if nbEarlySame == EARLY_SAME_LIMIT:
                 trainLoop.total = itLoop
                 break
+        lastLossEarly = loss
 
 
 # Save params
@@ -182,17 +198,17 @@ if not writeInFile(PARAMS_FILE, strParams):
 
 
 # Model accuracy
-results = neuralNetwork.forwardPropagation(X_train)
+results = neuralNetwork.predict(X_train)
 errors = 0
 for y in range(nbDataTrain):
-    if Y_train[0, y] != (results[0, y] >= 0.5):
+    if Y_trainFlat[y] != results[y]:
         errors += 1
 print(f"Model train accuracy : {(1 - (errors / nbDataTrain)) * 100:.2f}%")
 
-results = neuralNetwork.forwardPropagation(X_validation)
+results = neuralNetwork.predict(X_validation)
 errors = 0
 for y in range(nbDataValidation):
-    if Y_validation[0, y] != (results[0, y] >= 0.5):
+    if Y_validationFlat[y] != results[y]:
         errors += 1
 accuracy = (1 - (errors / nbDataValidation)) * 100
 print(f"Model validation accuracy : {accuracy:.2f}%")

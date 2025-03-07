@@ -6,7 +6,7 @@
 #    By: gugus <gugus@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/20 15:14:35 by aderouba          #+#    #+#              #
-#    Updated: 2025/03/04 15:48:07 by gugus            ###   ########.fr        #
+#    Updated: 2025/03/07 18:53:52 by gugus            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -158,4 +158,8 @@ class NeuralNetwork:
         @param  X   Input to predict.
         @return A matrix of predicted result.
         """
-        return self.forwardPropagation(X) >= 0.5
+        NNresults = self.forwardPropagation(X)
+        lst_result = []
+        for i in range(NNresults.shape[1]):
+            lst_result.append(int(NNresults[0, i] <= NNresults[1, i]))
+        return np.array(lst_result).T

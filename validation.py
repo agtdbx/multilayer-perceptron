@@ -6,7 +6,7 @@
 #    By: gugus <gugus@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/21 15:08:58 by gugus             #+#    #+#              #
-#    Updated: 2025/03/06 18:29:26 by gugus            ###   ########.fr        #
+#    Updated: 2025/03/07 19:27:05 by gugus            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -45,12 +45,18 @@ hiddenLayers, maxes, NNparams = parsedParams
 # Put data into good format for training
 lst_inputs = []
 lst_result = []
+lst_resultFlat = []
 for inputs, result, _ in datas:
     lst_inputs.append(inputs)
-    lst_result.append([result])
+    if result == 0:
+        lst_result.append([1, 0])
+    else:
+        lst_result.append([0, 1])
+    lst_resultFlat.append(result)
 
 X_validation = np.array(lst_inputs).T
 Y_validation = np.array(lst_result).T
+Y_validationFlat = np.array(lst_resultFlat)
 
 
 # Normalize data
@@ -75,11 +81,11 @@ except Exception as error:
 
 
 # Number of errors
-result = neuralNetwork.predict(X_validation)
+results = neuralNetwork.predict(X_validation)
 
 nbError = 0
 for i in range(nbData):
-    if Y_validation[0, i] != result[0, i]:
+    if Y_validationFlat[i] != results[i]:
         nbError += 1
 
 error = (nbError / nbData)

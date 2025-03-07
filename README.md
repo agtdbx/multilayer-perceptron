@@ -19,7 +19,7 @@ deactivate
 ```
 ### Dependencies
 ```
-pip install -r requierements.txt
+pip install -r requirements.txt
 ```
 
 ## Usage
